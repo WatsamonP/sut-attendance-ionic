@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons end>
+      <button ion-button (click)="closeModal()">Close</button>
+    </ion-buttons>
+    <ion-title>Quiz Score</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content class="bg">
+    <div style="text-align: center">
+      <p text-wrap>กำหนดคะแนนที่ต้องการหรือเลือกจาก List</p>
+    </div>
+  
+    <ion-card>
+      <ion-item>
+        <ion-label><ion-icon name="brush" color="orange"></ion-icon> Custom</ion-label>
+        <ion-input type="number" [(ngModel)]="scoreSelect"></ion-input>
+      </ion-item>
+    </ion-card>
+
+    <ion-card (click)="update()">
+      <div ion-text color="gray" style="padding-top: 5%">
+        <!--ion-badge color="primary">{{scoreRange}}</ion-badge-->
+        <div style="padding-left: 5%">
+          <ion-row>
+            <ion-col col-8 style="text-align: left">
+              <ion-badge color="primary">{{structure.lower}} - {{structure.upper}}</ion-badge>
+              Custom Score Range
+            </ion-col>
+            <ion-col style="text-align: right">
+              <button ion-button small clear (click)="update()">
+                UPDATE
+              </button>
+            </ion-col>
+          </ion-row>
+        </div>
+
+        <ion-item>
+          <ion-range dualKnobs="true" pin="true" [(ngModel)]="structure" color="primary">
+            <p range-left>{{structure.lower}}</p>
+            <p range-right>{{structure.upper}}</p>
+          </ion-range>
+        </ion-item>
+      </div>
+      <hr>
+      <ion-item>
+        <ion-label><ion-icon name="list-box" color="primary"></ion-icon> List</ion-label>
+        <ion-select [(ngModel)]="scoreSelect">
+          <ion-option value="{{item}}" *ngFor="let item of scoreRangeArr; let i = index">
+            {{item}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-card>
+
+    <br>
+
+    <div style="padding: 5%">
+      <button ion-button color="primary" block (click)="onClickScan()">
+        <div>SCAN</div>
+      </button>
+    </div>
+
+  </ion-content>

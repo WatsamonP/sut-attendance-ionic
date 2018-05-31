@@ -1,0 +1,23 @@
+<ion-content>
+  <br><br>
+  <div class="center">
+    <img src="assets/imgs/logoApp.png" width="220px" />
+
+    <div class="my-block">
+	    <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <ion-item>
+          <ion-label color="primary" floating>EMAIL</ion-label>
+          <ion-input type="text" formControlName="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" floating>Password</ion-label>
+          <ion-input type="password" formControlName="password"></ion-input>
+        </ion-item>
+        
+        <br><br>
+        
+        <button class="button-color" ion-button block type="submit" [disabled]="!loginForm.valid">SIGN IN</button>
+      </form>
+    </div>
+  </div>  
+</ion-content>
