@@ -28,13 +28,13 @@ import { HttpModule } from '@angular/http';
 @NgModule({
   declarations: [
     MyApp,
-    HomePage/*
+    HomePage,
     LoginPage,
     AttendancePage,
     QuizPage,
     QuizModalPage,
     QuizModalPersonPage,
-    AboutMePage,*/
+    AboutMePage,
   ],
   imports: [
     BrowserModule,
