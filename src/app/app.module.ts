@@ -1,7 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { IonicStorageModule } from '@ionic/storage';
+import { GooglePlus } from '@ionic-native/google-plus';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -42,7 +43,6 @@ import { HttpModule } from '@angular/http';
     AngularFireModule.initializeApp(firebaseConfig.fire),
     AngularFireDatabaseModule,
     HttpModule,
-    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -63,6 +63,8 @@ import { HttpModule } from '@angular/http';
     AngularFireAuth,
     BarcodeScanner,
     CourseService,
+    GooglePlus,
+    NativeStorage
   ],
 })
 export class AppModule {}

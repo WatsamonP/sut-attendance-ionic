@@ -1,7 +1,7 @@
 <ion-content>
   <br><br>
   <div class="center">
-    <img src="assets/imgs/logoApp.png" width="220px" />
+    <img src="assets/imgs/logoApp.png" width="160px" />
 
     <div class="my-block">
 	    <form [formGroup]="loginForm" (ngSubmit)="login()">
@@ -16,8 +16,14 @@
         
         <br><br>
         
-        <button class="button-color" ion-button block type="submit" [disabled]="!loginForm.valid">SIGN IN</button>
+        <button ion-button color="primary" block type="submit" [disabled]="!loginForm.valid">Sign In</button>
       </form>
+
+      ----- OR ------
+      <button ion-button color="b-google" block (click)="googleLogin()">
+        <ion-icon name="logo-googleplus"></ion-icon>&nbsp;&nbsp;&nbsp;
+        Sign in with Google</button>
+
     </div>
   </div>  
 </ion-content>
