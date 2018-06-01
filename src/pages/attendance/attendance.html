@@ -126,20 +126,26 @@
             </ion-row>
             <ion-row ion-text [color]="odd ? 'tone1' : 'tone2'">
               <!--ion-col col-2 style="text-align: center"><h6><ion-icon name="arrow-back"></ion-icon></h6></ion-col--> 
-              <ion-col style="text-align: center">
-                <h6><ion-icon name="happy"></ion-icon> มาเรียน : {{item.countOnTime+item.countLate}} </h6></ion-col>
-              <ion-col style="text-align: center">
+              <ion-col style="text-align: left; padding-left: 10%">
+                <h6 ion-text color='success'>
+                  <ion-icon name="happy"></ion-icon> มาเรียน : {{item.countOnTime+item.countLate}} </h6>
+                <h6 ion-text color='danger2'>
+                  <ion-icon name="sad"></ion-icon> ขาดเรียน : {{item.countMiss}} </h6>
+              </ion-col>
+              <!--ion-col style="text-align: center">
                   <h6><ion-icon name="sad"></ion-icon> ขาด : {{item.countMiss}} </h6></ion-col> 
                 
-              <ion-col col-2 style="text-align: center"><h6> | </h6></ion-col> 
-              <ion-col style="text-align: center">
-                <h6> สาย : {{item.countLate}} </h6></ion-col> 
+              <ion-col col-2 style="text-align: center"><h6> | </h6></ion-col--> 
+              <ion-col style="text-align: left; padding-left: 5%">
+                <h6>ตรงเวลา : {{item.countOnTime}}</h6>
+                <h6>สาย : {{item.countLate}} | ลา : {{item.countLeave}} </h6>
+              </ion-col> 
             </ion-row>
           </ion-item>
           <ion-item-options side="right">
             <button ion-button color="primary" (click)="onClickUpdateAttendanceLeave(item.id, item)">
-              <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
-              SCAN ป่วย/ลา
+              <ion-icon name="medkit" style="font-size: 25px"></ion-icon>
+              Leave/Sick
             </button>
             <button ion-button color="secondary" (click)="onClickUpdateAttendance(item.id, item)">
               <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>

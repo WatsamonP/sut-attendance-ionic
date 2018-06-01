@@ -160,7 +160,78 @@ export class AttendancePage {
     prompt.present();
   }
 
-  onClickCreateLeaveStd(id,onTimeScore) {
+  onClickCreateLeaveOption(id,onTimeScore) {
+    let prompt = this.alertCtrl.create({
+      title: 'กำหนดคะแนน',
+      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
+      buttons: [
+        {
+          text: 'Scan',
+          handler: data => {
+            this.onClickCreateLeaveScan(id,onTimeScore)
+          }
+        },
+        {
+          text: 'ป้อนรหัสนักศึกษา',
+          handler: data => {
+            this.onClickCreateLeaveString(id,onTimeScore)
+          }
+        },{
+          text: 'Cancel',
+          handler: data => {}
+        },
+      ]
+    });
+    prompt.present();
+  }
+
+  onClickCreateLeaveString(id,onTimeScore) {
+    let prompt = this.alertCtrl.create({
+      title: 'กำหนดคะแนน',
+      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
+      inputs: [
+        {
+          name: 'stdId',
+          placeholder: 'รหัสนักศึกษา',
+          type : 'text',
+        },
+        {
+          name: 'leaveScore',
+          placeholder: 'คะแนน',
+          type: 'number',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            console.log(Number(data.leaveScore) +' > '+ Number(onTimeScore));
+            if(Number(data.leaveScore) > Number(onTimeScore)){
+              this.errorScoreAlertLeave();
+            }else{
+              this.leaveScore = data.leaveScore;
+              this.attendance_status = 'Leave';
+              let stdFlag = this.checkStudentClass(data.stdId,id);
+              if(stdFlag){
+                this.checkAttendance(data.stdId,id); 
+              }else{
+                this.errorStudentFlag(id);
+              }
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+  onClickCreateLeaveScan(id,onTimeScore) {
     let prompt = this.alertCtrl.create({
       title: 'กำหนดคะแนน',
       message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
@@ -181,11 +252,12 @@ export class AttendancePage {
         {
           text: 'Save',
           handler: data => {
-            if(Number(data.leaveScore) > Number(data.onTimeScore)){
+            console.log(Number(data.leaveScore) +' > '+ Number(onTimeScore));
+            if(Number(data.leaveScore) > Number(onTimeScore)){
               this.errorScoreAlertLeave();
             }else{
               this.leaveScore = data.leaveScore;
-              this.attendance_status = "leave";
+              this.attendance_status = 'Leave';
               this.scanQR(id);
             }
           }
@@ -203,7 +275,7 @@ export class AttendancePage {
   }
 
   onClickUpdateAttendanceLeave(id, item){
-    this.onClickCreateLeaveStd(id,item.onTimeScore)
+    this.onClickCreateLeaveOption(id,item.onTimeScore)
   }
 
   onClickDelete(id : String){
@@ -355,6 +427,7 @@ export class AttendancePage {
           countLate : 0,
           countMiss : this.studentCount,
           countOnTime : 0,
+          countLeave : 0,
       });
     // Set 0 Score
     for(var i=0 ; i<this.studentList.length ; i++){
@@ -389,15 +462,12 @@ export class AttendancePage {
     return this.studentFlag;
   }
   checkAttendance(barcodeDataText, id){
-    if(this.attendance_status == 'leave'){
-      
+    if(this.attendance_status == 'Leave'){
+      this.attendance_score = this.leaveScore;
     }else{
       this.calculateTime();
     }
-    let countLate = 0;
-    let countMiss = 0;
-    let countOnTime = 0;
-    let countLeave = 0;
+    let countLate, countMiss, countOnTime ,countLeave;
 
     ///////////////////////////////////////
     for(var i=0 ; i<this.scheduleAttendanceList.length ; i++){
@@ -432,7 +502,7 @@ export class AttendancePage {
     }else if(this.attendance_status=='onTime'){
       countOnTime = countOnTime+1;
       countMiss = countMiss-1;
-    }else if(this.attendance_status=='leave'){
+    }else if(this.attendance_status=='Leave'){
       countLeave = countLeave+1;
       countMiss = countMiss-1;
     }
@@ -482,7 +552,8 @@ export class AttendancePage {
       console.log('Ontime');
       this.attendance_status = 'onTime';
       this.attendance_score = this.onTimeScore;
-    }/*
+    }
+    /*
     let currentDay = new Date();
     let currentHour = new Date().getHours();
     let currentMinute = new Date().getMinutes();
