@@ -31,6 +31,7 @@ export class AttendancePage {
   lateScore : any;
   lateTime : any;
   onTimeScore : any;
+  leaveScore : any;
   // TIME
   today = moment().format("DD-MM-YYYY HH:mm"); 
   todayTime = moment().format("HH:mm"); 
@@ -159,11 +160,50 @@ export class AttendancePage {
     prompt.present();
   }
 
+  onClickCreateLeaveStd(id,onTimeScore) {
+    let prompt = this.alertCtrl.create({
+      title: 'กำหนดคะแนน',
+      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
+      inputs: [
+        {
+          name: 'leaveScore',
+          placeholder: 'คะแนน',
+          type: 'number',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            if(Number(data.leaveScore) > Number(data.onTimeScore)){
+              this.errorScoreAlertLeave();
+            }else{
+              this.leaveScore = data.leaveScore;
+              this.attendance_status = "leave";
+              this.scanQR(id);
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
   onClickUpdateAttendance(id, item){
     this.lateTime = item.lateTime;
     this.lateScore = item.lateScore;
     this.onTimeScore = item.onTimeScore;
     this.scanQR(id);
+  }
+
+  onClickUpdateAttendanceLeave(id, item){
+    this.onClickCreateLeaveStd(id,item.onTimeScore)
   }
 
   onClickDelete(id : String){
@@ -230,6 +270,15 @@ export class AttendancePage {
     let alert = this.alertCtrl.create({
       title: 'ERROR !',
       subTitle: 'คะแนนเข้าเรียนสาย มากกว่าคะแนนเข้าเรียนตรงเวลา กรุณาแก้ไข',
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
+  errorScoreAlertLeave() {
+    let alert = this.alertCtrl.create({
+      title: 'ERROR !',
+      subTitle: 'คะแนนป่วย/ลา มากกว่าคะแนนเข้าเรียนตรงเวลา กรุณาแก้ไข',
       buttons: ['OK']
     });
     alert.present();
@@ -340,10 +389,15 @@ export class AttendancePage {
     return this.studentFlag;
   }
   checkAttendance(barcodeDataText, id){
-    this.calculateTime();
-    let countLate;
-    let countMiss;
-    let countOnTime;
+    if(this.attendance_status == 'leave'){
+      
+    }else{
+      this.calculateTime();
+    }
+    let countLate = 0;
+    let countMiss = 0;
+    let countOnTime = 0;
+    let countLeave = 0;
 
     ///////////////////////////////////////
     for(var i=0 ; i<this.scheduleAttendanceList.length ; i++){
@@ -351,6 +405,7 @@ export class AttendancePage {
         countLate = this.scheduleAttendanceList[i].countLate;
         countMiss = this.scheduleAttendanceList[i].countMiss;
         countOnTime = this.scheduleAttendanceList[i].countOnTime;
+        countLeave = this.scheduleAttendanceList[i].countLeave;
 
         if(this.scheduleAttendanceList[i].checked != undefined){
           if(barcodeDataText in this.scheduleAttendanceList[i].checked){
@@ -358,17 +413,17 @@ export class AttendancePage {
             this.errorDuplicateData(id, barcodeDataText);
           }else{
             //alert("SCAN : " + barcodeDataText);
-            this.updateAttendance(id,countLate,countMiss,countOnTime,barcodeDataText);
+            this.updateAttendance(id,countLate,countMiss,countOnTime,countLeave,barcodeDataText);
           }
         }else{
           //alert("SCAN : " + barcodeDataText);
-          this.updateAttendance(id,countLate,countMiss,countOnTime,barcodeDataText);
+          this.updateAttendance(id,countLate,countMiss,countOnTime,countLeave,barcodeDataText);
         }
       }
     }
   }
 
-  updateAttendance(id,countLate,countMiss,countOnTime, barcodeDataText){
+  updateAttendance(id,countLate,countMiss,countOnTime,countLeave, barcodeDataText){
     let scoreNo = Number(this.attendance_score);
 
     if(this.attendance_status=='Late'){
@@ -377,13 +432,17 @@ export class AttendancePage {
     }else if(this.attendance_status=='onTime'){
       countOnTime = countOnTime+1;
       countMiss = countMiss-1;
+    }else if(this.attendance_status=='leave'){
+      countLeave = countLeave+1;
+      countMiss = countMiss-1;
     }
 
     this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`)
     .update({
       countLate : countLate,
       countMiss : countMiss,
-      countOnTime : countOnTime
+      countOnTime : countOnTime,
+      countLeave : countLeave,
     });
 
     this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/attendance/${id}`)

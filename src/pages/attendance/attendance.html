@@ -137,6 +137,10 @@
             </ion-row>
           </ion-item>
           <ion-item-options side="right">
+            <button ion-button color="primary" (click)="onClickUpdateAttendanceLeave(item.id, item)">
+              <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
+              SCAN ป่วย/ลา
+            </button>
             <button ion-button color="secondary" (click)="onClickUpdateAttendance(item.id, item)">
               <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
               SCAN
