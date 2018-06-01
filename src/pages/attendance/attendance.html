@@ -121,7 +121,7 @@
                     </ion-col>
                   </ion-row>
                 </div>
-                <p>เวลาสาย : {{item.lateTime}}  |  คะแนนสาย : {{item.lateScore}}</p>
+                <p>เวลาสาย : {{item.lateTime | date:'HH:mm'}}  |  คะแนนสาย : {{item.lateScore}}</p>
               </div>
             </ion-row>
             <ion-row ion-text [color]="odd ? 'tone1' : 'tone2'">

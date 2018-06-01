@@ -34,7 +34,8 @@ export class AttendancePage {
   // TIME
   today = moment().format("DD-MM-YYYY HH:mm"); 
   todayTime = moment().format("HH:mm"); 
-  lateTemp = moment().add(3, 'minutes').format("HH:mm");
+  currentDay = Date();
+  lateDay: any;
   lateHour : string;
   lateMinute : string;
   isToggled: boolean = false;
@@ -100,7 +101,7 @@ export class AttendancePage {
   onClickCreate() {
     let prompt = this.alertCtrl.create({
       title: 'จัดการเวลา-คะแนน',
-      message: "กำหนดเวลาเข้าเรียนสายและคะแนน <br> ค่าเริ่มต้น สาย : 0.5 | ตรงเวลา : 1<br>เวลาสาย +3 นาทีจากเวลาปัจจุบัน",
+      message: "กำหนดเวลาเข้าเรียนสายและคะแนน <br> ค่าเริ่มต้น สาย : 0.5 | ตรงเวลา : 1<br>เวลาสาย +5 นาทีจากเวลาปัจจุบัน",
       inputs: [
         {
           name: 'lateTime',
@@ -128,8 +129,18 @@ export class AttendancePage {
         {
           text: 'Save',
           handler: data => {
+            console.log(data.lateTime)
             if(data.lateTime == ""){
-              data.lateTime = this.lateTemp;
+              var d1 = new Date(), d2 = new Date(d1);
+              d2.setMinutes ( d1.getMinutes() + 5 );
+              data.lateTime = d2;
+            }else{
+              var d1 = new Date(), d2 = new Date(d1);
+              let dateParts = data.lateTime.split(":");
+              d2.setHours(Number(dateParts[0]));
+              d2.setMinutes(Number(dateParts[1]));
+              data.lateTime = d2;
+              this.lateDay = d2;
             }
             if(data.lateScore == ""){
               data.lateScore = '0.5';
@@ -156,7 +167,6 @@ export class AttendancePage {
     this.lateScore = item.lateScore;
     this.onTimeScore = item.onTimeScore;
     this.scanQR(id);
-    //this.checkAttendance('B5800018', id);
   }
 
   onClickDelete(id : String){
@@ -288,7 +298,6 @@ export class AttendancePage {
     this.lateScore = lateScore;
     this.onTimeScore = onTimeScore;
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
-    console.log(this.studentCount);
 
     this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${dateId}`)
         .update({
@@ -408,11 +417,22 @@ export class AttendancePage {
   }
 
   calculateTime(){
+    if(this.currentDay > this.lateDay){
+      console.log('Late');
+      this.attendance_status = 'Late';
+      this.attendance_score = this.lateScore;
+    }else{
+      console.log('Ontime');
+      this.attendance_status = 'onTime';
+      this.attendance_score = this.onTimeScore;
+    }/*
+    let currentDay = new Date();
     let currentHour = new Date().getHours();
     let currentMinute = new Date().getMinutes();
     const dateParts = this.lateTime.split(":");
     let lateHour = Number(dateParts[0]);
     let lateMinute = Number(dateParts[1]);
+
     if (currentHour > lateHour) {
       this.attendance_status = 'Late';
       this.attendance_score = this.lateScore;
@@ -424,7 +444,7 @@ export class AttendancePage {
         this.attendance_status = 'onTime';
         this.attendance_score = this.onTimeScore;
       }
-    }
+    }*/
   }
 
 
@@ -464,8 +484,6 @@ export class AttendancePage {
         this.errorStudentFlag(id);
       }
 
-      //this.checkAttendance(barcodeData.text,id);
-      
       console.log(barcodeData);
       //this.goToResult(barcodeData);
       }, (err) => {

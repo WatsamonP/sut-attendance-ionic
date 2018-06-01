@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, reorderArray } from 'ionic-angular';
+
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthServiceProvider } from '../../services/auth.service';
 import { Course } from '../../services/course.model';
