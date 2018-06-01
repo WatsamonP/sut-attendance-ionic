@@ -34,8 +34,6 @@ export class AttendancePage {
   // TIME
   today = moment().format("DD-MM-YYYY HH:mm"); 
   todayTime = moment().format("HH:mm"); 
-  currentDay = Date();
-  lateDay: any;
   lateHour : string;
   lateMinute : string;
   isToggled: boolean = false;
@@ -140,7 +138,6 @@ export class AttendancePage {
               d2.setHours(Number(dateParts[0]));
               d2.setMinutes(Number(dateParts[1]));
               data.lateTime = d2;
-              this.lateDay = d2;
             }
             if(data.lateScore == ""){
               data.lateScore = '0.5';
@@ -417,7 +414,8 @@ export class AttendancePage {
   }
 
   calculateTime(){
-    if(this.currentDay > this.lateDay){
+    let currentDay = Date();
+    if(currentDay > this.lateTime){
       console.log('Late');
       this.attendance_status = 'Late';
       this.attendance_score = this.lateScore;
