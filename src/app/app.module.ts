@@ -1,8 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { GooglePlus } from '@ionic-native/google-plus';
-import { NativeStorage } from '@ionic-native/native-storage';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -62,9 +60,7 @@ import { HttpModule } from '@angular/http';
     AuthServiceProvider,
     AngularFireAuth,
     BarcodeScanner,
-    CourseService,
-    GooglePlus,
-    NativeStorage
+    CourseService
   ],
 })
 export class AppModule {}

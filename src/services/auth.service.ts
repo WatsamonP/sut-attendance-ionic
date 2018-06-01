@@ -3,17 +3,17 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import AuthProvider = firebase.auth.AuthProvider;
-import { GooglePlus } from '@ionic-native/google-plus';
 import { HomePage } from '../pages/home/home';
-import { NativeStorage } from '@ionic-native/native-storage';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 @Injectable()
 export class AuthServiceProvider {
 
-	private user: firebase.User;
+  private user: firebase.User;
+  userList: any;
 
 	constructor(
-    public afAuth: AngularFireAuth) {
+    public afAuth: AngularFireAuth,private db: AngularFireDatabase) {
 		this.afAuth.authState.subscribe(user => {
 			this.user = user;
 		});
@@ -36,80 +36,39 @@ export class AuthServiceProvider {
     return this.user && this.user.uid;
   }
 
-  /*
+  currentUser() {
+    return this.user && this.user;
+  }
+
+
+  private socialSignIn(provider) {
+    return this.afAuth.auth.signInWithPopup(provider)
+      .then((credential) => {
+        console.log(credential.user);
+        this.user = credential.user;
+        this.updateUser(this.user);
+      })
+      .catch(error => console.log(error));
+  }
 
   googleLogin() {
-		if (this.platform.is('cordova')) {
-			this.nativeGoogleLogin();
-		} else {
-			this.webGoogleLogin();
-		}
-	}
-	
-	async nativeGoogleLogin(): Promise<void> {
-		try {
-	
-			const gplusUser = await this.gplus.login({
-				'webClientId': 'your-webClientId-XYZ.apps.googleusercontent.com',
-				'offline': true,
-				'scopes': 'profile email'
-			})
-	
-			return await this.afAuth.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken))
-	
-		} catch(err) {
-			console.log(err)
-		}
-	}
-
-	async webGoogleLogin(): Promise<void> {
-		try {
-			const provider = new firebase.auth.GoogleAuthProvider();
-			const credential = await this.afAuth.auth.signInWithPopup(provider);
-	
-		} catch(err) {
-			console.log(err)
-		}
-	
+    const provider = new firebase.auth.GoogleAuthProvider();
+    return this.socialSignIn(provider);
   }
-  */
-
-  /*
-  
-  doGoogleLogin(){
-    let nav = this.navCtrl;
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-    loading.present();
-    this.googlePlus.login({
-      'scopes': '', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-      'webClientId': '1091419544653-nhncrb7n0sk43t3unhqk3q8h6smnbt22.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-      'offline': true
-    })
-    .then((user) => {
-      loading.dismiss();
-
-      this.nativeStorage.setItem('user', {
-        name: user.displayName,
-        email: user.email,
-        picture: user.imageUrl
-      })
-      .then(() => {
-        nav.push(HomePage);
-      }, (error) => {
-        console.log(error);
-      })
-      
-    }, (error) => {
-      loading.dismiss();
-    });
-
-  }
-  */
 
   signOut(): Promise<void> {
     return this.afAuth.auth.signOut();
+  }
+
+  updateUser(user){
+    this.db.object(`users/${this.user.uid}/profile`)
+      .update({
+        email: this.user.email,
+        username : this.user.displayName.split(" ")[0],
+        firstName : this.user.displayName.split(" ")[0],
+        lastName : this.user.displayName.split(" ")[1],
+        tel : ''
+    });
   }
 
 }

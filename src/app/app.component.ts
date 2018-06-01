@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, NavParams } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -15,11 +15,11 @@ import { User } from '../services/user.model';
 })
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
-
+  //@ViewChild(NavParams) navParams: NavParams;
+  loginStatus: any;
   rootPage: any;
   pages;
   userData = {};
-  test;
 
   constructor(
     public platform: Platform, 
@@ -27,13 +27,14 @@ export class MyApp {
     public splashScreen: SplashScreen,
     private auth: AuthServiceProvider,
     private db: AngularFireDatabase) {
-    this.initializeApp();
 
-    this.pages = [
-      { title: 'Home', component: HomePage, icon: 'home'},
-      { title: 'About Me', component: AboutMePage, icon: 'contacts'},
-      { title: 'Sign Out', component: "", icon: 'log-out'}
-    ];
+      this.initializeApp();
+
+      this.pages = [
+        { title: 'Home', component: HomePage, icon: 'home'},
+        { title: 'About Me', component: AboutMePage, icon: 'contacts'},
+        { title: 'Sign Out', component: "", icon: 'log-out'}
+      ];
     
   }
 
@@ -65,9 +66,7 @@ export class MyApp {
   // set our app's pages
 
   getUserProfile(){
-
     const path = `users/${this.auth.currentUserId()}/profile`;
-
     this.db.object(path).snapshotChanges().map(action => {
       const $key = action.payload.key;
       const data = { $key, ...action.payload.val() };
@@ -77,12 +76,11 @@ export class MyApp {
         username : data.username,
         firstName : data.firstName,
         lastName : data.lastName,
-        tel : data.tel,
-        avatar : data.firstName.charAt(0)
       }
       return data;
     }).subscribe();
   }
+
 
   openPage(page) {
     // Reset the content nav to have just this page

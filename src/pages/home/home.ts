@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, reorderArray } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthServiceProvider } from '../../services/auth.service';
 import { Course } from '../../services/course.model';
@@ -25,8 +24,7 @@ export class HomePage {
     public navCtrl: NavController,
     private auth: AuthServiceProvider,
     private db: AngularFireDatabase,
-    public alertCtrl: AlertController,
-    public storage: Storage) {
+    public alertCtrl: AlertController) {
 
       //this.doRefresh(0);
 
@@ -38,31 +36,6 @@ export class HomePage {
         return items.map(item => item.key);
       });
   }
-
-  doRefresh(refresher){
-    this.storage.get('myStore1').then((data) => {
-      this.courseList = data;
- 
-      if(refresher != 0)
-         refresher.complete();
-    }); 
-  }
-
-  reorderItems(indexes) {
-    this.courseList = reorderArray(this.courseList, indexes);
-  }
-
-  actionBtn(){
-    if(this.btnName == 'EDIT'){
-      this.btnName = 'DONE';
-      this.flag    = true;
-    }else{
-      this.btnName = 'EDIT';
-      this.flag    = false;
-      this.storage.set('myStore1', this.courseList);
-    }
-   }
-
 
   selectedCourse(cid : string, cname : string){
     this.navCtrl.push(AttendancePage, {

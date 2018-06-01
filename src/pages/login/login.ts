@@ -3,9 +3,6 @@ import { IonicPage, NavController, NavParams, Platform, LoadingController  } fro
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HomePage } from '../home/home';
 import { AuthServiceProvider } from '../../services/auth.service';
-import { NativeStorage } from '@ionic-native/native-storage';
-import { GooglePlus } from '@ionic-native/google-plus';
-import * as firebase from 'firebase/app';
 
 @IonicPage()
 @Component({
@@ -20,9 +17,7 @@ export class LoginPage {
 		private navCtrl: NavController,
 		private auth: AuthServiceProvider,
 		public formBuilder: FormBuilder,
-		public loadingCtrl: LoadingController,
-		public nativeStorage: NativeStorage,
-		public googlePlus: GooglePlus
+		public loadingCtrl: LoadingController
 	) {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
@@ -49,17 +44,11 @@ export class LoginPage {
 	}
 
 	googleLogin(){
-		this.googlePlus.login({
-			'webClientId' : '386280596287-7rqut0vvpivqvesqq2j4df7u92ls9kkk.apps.googleusercontent.com',
-			'offline' : true
-		}).then(res=>{
-			firebase.auth().signInWithCredential(firebase.auth.GoogleAuthProvider.credential(res.idToken))
-			.then(success=>{
-				alert('Success');
-			}).catch(error=>{
-				alert('Error')
-			})
-		})
+    this.auth.googleLogin()
+    .then(
+      () => this.navCtrl.setRoot(HomePage),
+      error => this.loginError = error.message
+    );
 	}
 
 	
