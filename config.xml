@@ -82,10 +82,6 @@
     <plugin name="cordova-plugin-ionic-webview" spec="1.1.19" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="2.0.5" />
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.1.2" />
-    <plugin name="cordova-plugin-nativestorage" spec="^2.3.1" />
-    <plugin name="cordova-plugin-googleplus" spec="^5.3.0">
-        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.386280596287-7rqut0vvpivqvesqq2j4df7u92ls9kkk" />
-    </plugin>
     <engine name="android" spec="7.0.0" />
     <engine name="ios" spec="4.5.4" />
 </widget>
