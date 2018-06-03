@@ -4,4 +4,5 @@ export class Course {
   year: number;
   trimester: number;
   img: String;
+  group : any;
 }

@@ -19,6 +19,8 @@ export class AttendancePage {
   //navParams
   course_id : string;
   course_name : string;
+  course_group : any;
+  group_id : string;
   //Model & List
   studentList: Student[];
   courseList : Course[];
@@ -57,9 +59,11 @@ export class AttendancePage {
 
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
+    this.course_group = navParams.get('course_group');
+    this.group_id = this.course_group.id;
 
-    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance`;
-    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
+    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance`;
+    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
     this.isToggled = false;
 
     //Query scheduleAttendanceList
@@ -280,11 +284,11 @@ export class AttendancePage {
 
   onClickDelete(id : String){
 
-    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`;
+    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`;
     this.db.object(path).remove();
     
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/attendance/${id}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${id}`)
         .remove();
     } 
   }
@@ -417,7 +421,7 @@ export class AttendancePage {
     this.onTimeScore = onTimeScore;
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${dateId}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
         .update({
           id : dateId,
           date : Date(),                                                         
@@ -431,7 +435,7 @@ export class AttendancePage {
       });
     // Set 0 Score
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
         .update({
           score : 0,
           status : 'Missed Class',
@@ -448,15 +452,11 @@ export class AttendancePage {
   checkStudentClass(barcodeDataText,id){
     for(var i=0 ; i<this.studentList.length ; i++){
       if(barcodeDataText == this.studentList[i].id){
-        //alert('found'+barcodeDataText +' = ' + this.studentList[i].id);
-        //console.log('found')
         this.studentFlag = true;
         break;
       }else{
-        //alert('not found');
         this.studentFlag = false;
         continue;
-        //this.errorStudentFlag(id);
       }
     }
     return this.studentFlag;
@@ -482,11 +482,9 @@ export class AttendancePage {
             console.log('duplicate');
             this.errorDuplicateData(id, barcodeDataText);
           }else{
-            //alert("SCAN : " + barcodeDataText);
             this.updateAttendance(id,countLate,countMiss,countOnTime,countLeave,barcodeDataText);
           }
         }else{
-          //alert("SCAN : " + barcodeDataText);
           this.updateAttendance(id,countLate,countMiss,countOnTime,countLeave,barcodeDataText);
         }
       }
@@ -507,7 +505,7 @@ export class AttendancePage {
       countMiss = countMiss-1;
     }
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`)
     .update({
       countLate : countLate,
       countMiss : countMiss,
@@ -515,14 +513,14 @@ export class AttendancePage {
       countLeave : countLeave,
     });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/attendance/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${barcodeDataText}/attendance/${id}`)
       .update({
         score : scoreNo,
         date : Date(),
         status : this.attendance_status,
       });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}/checked/${barcodeDataText}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}/checked/${barcodeDataText}`)
       .set({
         id : barcodeDataText,
     });
@@ -534,7 +532,7 @@ export class AttendancePage {
     this.lateTime = lateTime;
     this.lateScore = lateScore;
     this.onTimeScore = onTimeScore;
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`)
         .update({
           lateTime : lateTime,
           lateScore : lateScore,
@@ -553,26 +551,6 @@ export class AttendancePage {
       this.attendance_status = 'onTime';
       this.attendance_score = this.onTimeScore;
     }
-    /*
-    let currentDay = new Date();
-    let currentHour = new Date().getHours();
-    let currentMinute = new Date().getMinutes();
-    const dateParts = this.lateTime.split(":");
-    let lateHour = Number(dateParts[0]);
-    let lateMinute = Number(dateParts[1]);
-
-    if (currentHour > lateHour) {
-      this.attendance_status = 'Late';
-      this.attendance_score = this.lateScore;
-    }else{
-      if(currentMinute > lateMinute){
-        this.attendance_status = 'Late';
-        this.attendance_score = this.lateScore;
-      }else if(currentMinute <= lateMinute){
-        this.attendance_status = 'onTime';
-        this.attendance_score = this.onTimeScore;
-      }
-    }*/
   }
 
 
@@ -588,20 +566,10 @@ export class AttendancePage {
 
 
   public scanQR(id) {
-    //this.buttonText = "Loading..";
-    //this.loading = true;
-
     this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
       if (barcodeData.cancelled) {
         console.log("User cancelled the action!");
         this.navCtrl.getViews();
-        //this.navCtrl.getActive().AttendancePage({});
-        /*
-        this.appCtrl.getActive()(AttendancePage, {
-          course_id: this.course_id,
-          course_name: this.course_name
-        });
-        */
         return false;
       }
 
@@ -611,9 +579,7 @@ export class AttendancePage {
       }else{
         this.errorStudentFlag(id);
       }
-
       console.log(barcodeData);
-      //this.goToResult(barcodeData);
       }, (err) => {
         console.log(err);
     });

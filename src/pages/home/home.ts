@@ -18,8 +18,7 @@ export class HomePage {
   btnName: any = 'EDIT';
   flag: any = false;
   activity : {id: '',name: ''};
-  testItem: [{},{}];
-  courseTest : any;
+  groupList : any;
 
   constructor(
     public navCtrl: NavController,
@@ -34,46 +33,87 @@ export class HomePage {
         return actions.map(action => ({ key: action.key, ...action.payload.val() }));
       }).subscribe(items => {
         this.courseList = items;
+        console.log(this.groupList)
         return items.map(item => item.key);
       });
   }
 
-  selectedCourse(cid : string, cname : string){
+  gotoAttendance(cid : string, cname : string, group : string){
     this.navCtrl.push(AttendancePage, {
       course_id: cid,
-      course_name: cname
+      course_name: cname,
+      course_group : group
     });
   }
 
-  showRadio(cid : string, cname : string, img: String) {
+  selectGroup(cid,cname,img,activity){
+    this.groupList = [];
+    let group;
+    for(var i=0; i<this.courseList.length; i++){
+      if(this.courseList[i].id == cid ){
+        this.groupList = Object.keys(this.courseList[i].group)
+          .map(key => Object.assign({ key }, this.courseList[i].group[key]));
+      }
+    }
+
     let alert = this.alertCtrl.create();
     alert.setTitle('เลือกรายการที่ต้องการ');
+    if(activity == 'option'){
+      if(this.groupList.length == 1){
+        this.showRadio(cid,cname,this.groupList[0],img);
+        return false;
+      }else{
+        for(var i=0 ; i<this.groupList.length ; i++){
+          alert.addInput({ type: 'radio', label: this.groupList[i].name, value: this.groupList[i], checked: false });
+        }
+        alert.addInput({ type: 'radio', label: 'Change Color', value: 'color',checked: false });
+      }
+    }else if(activity == 'attendance'){
+      if(this.groupList.length == 1){
+        this.gotoAttendance(cid,cname,this.groupList[0]);
+        return false;
+      }else{
+        for(var i=0 ; i<this.groupList.length ; i++){
+          alert.addInput({ type: 'radio', label: this.groupList[i].name, value: this.groupList[i], checked: false });
+        }
+      }
+    }
+    
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'OK',
+      handler: data => {
+        if(data == 'color'){
+          this.colorAlert(cid, img);
+        }
+        if(activity == 'option'){
+          if(this.groupList.length != 1){
+            this.showRadio(cid,cname,data,img);
+          }
+        }else if(activity == 'attendance'){
+          if(this.groupList.length != 1){
+            this.gotoAttendance(cid,cname,data);
+          }
+        }
+        
+      }
+    });
+    alert.present();
+  }
 
+  showRadio(cid : string, cname : string,group : any, img: String) {
+    console.log(group);
+    let alert = this.alertCtrl.create();
+    alert.setTitle('เลือกรายการที่ต้องการ');
     alert.addInput({
-      type: 'radio',
-      label: 'Attendance',
-      value: 'attendance',
-      checked: true
-    });
+      type: 'radio', label: 'Attendance', value: 'attendance', checked: true });
     alert.addInput({
-      type: 'radio',
-      label: 'Quiz',
-      value: 'quiz',
-      checked: false
-    });
+      type: 'radio', label: 'Quiz', value: 'quiz', checked: false });
     alert.addInput({
-      type: 'radio',
-      label: 'Homework',
-      value: 'hw',
-      checked: false
-    });
-    alert.addInput({
-      type: 'radio',
-      label: 'Change Color',
-      value: 'color',
-      checked: false
-    });
-
+      type: 'radio', label: 'Homework', value: 'hw', checked: false });
+    if(group.id == 'all'){
+      alert.addInput({ type: 'radio', label: 'Change Color', value: 'color',checked: false });
+    }
     alert.addButton('Cancel');
     alert.addButton({
       text: 'OK',
@@ -84,18 +124,21 @@ export class HomePage {
         if(data == 'attendance'){
           this.navCtrl.push(AttendancePage, {
             course_id: cid,
-            course_name: cname
+            course_name: cname,
+            course_group : group
           });
         }else if(data == 'quiz'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
+            course_group : group,
             activity : {id: 'quiz', name: 'QUIZ'}
           });
         }else if(data == 'hw'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
+            course_group : group,
             activity : {id: 'hw', name: 'HOMEWORK'}
           });
         }
