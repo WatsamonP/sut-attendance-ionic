@@ -33,7 +33,6 @@ export class HomePage {
         return actions.map(action => ({ key: action.key, ...action.payload.val() }));
       }).subscribe(items => {
         this.courseList = items;
-        console.log(this.groupList)
         return items.map(item => item.key);
       });
   }

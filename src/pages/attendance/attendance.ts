@@ -24,6 +24,7 @@ export class AttendancePage {
   //Model & List
   studentList: Student[];
   courseList : Course[];
+  groupList : any;
   scheduleAttendanceList : any;
   studentDataList : any;
   // Val
@@ -83,6 +84,25 @@ export class AttendancePage {
           return items.map(item => item.key);
       });
 
+      
+      this.db.list(`users/${this.auth.currentUserId()}/course/`).snapshotChanges().map(actions => {
+        return actions.map(action => ({ key: action.key, ...action.payload.val() }));
+      }).subscribe(items => {
+        this.courseList = items;
+        this.groupList = [];
+        for(var i=0; i<this.courseList.length; i++){
+          if(this.courseList[i].id == this.course_id ){
+            this.groupList = Object.keys(this.courseList[i].group)
+              .map(key => Object.assign({ key }, this.courseList[i].group[key]));
+          }
+        }
+        return items.map(item => item.key);
+      });
+
+      
+
+      
+
 
   }
 
@@ -132,7 +152,6 @@ export class AttendancePage {
         {
           text: 'Save',
           handler: data => {
-            console.log(data.lateTime)
             if(data.lateTime == ""){
               var d1 = new Date(), d2 = new Date(d1);
               d2.setMinutes ( d1.getMinutes() + 5 );
@@ -288,13 +307,27 @@ export class AttendancePage {
 
   onClickDelete(id : String){
 
-    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`;
-    this.db.object(path).remove();
+    if(this.group_id == 'all'){
+      let gId='';
+      for(var i=0 ; i<this.groupList.length; i++){
+        gId = this.groupList[i].id;
+        let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/schedule/attendance/${id}`;
+        this.db.object(path).remove();
     
-    for(var i=0 ; i<this.studentList.length ; i++){
+        for(var i=0 ; i<this.studentList.length ; i++){
+        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/students/${this.studentList[i].id}/attendance/${id}`)
+        .remove();
+      }
+      
+      }
+    }else{
+      let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`;
+      this.db.object(path).remove();
+      for(var i=0 ; i<this.studentList.length ; i++){
       this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${id}`)
         .remove();
-    } 
+      }
+    }
   }
 
   onClickSetting(lateIndex, lateItem) {
@@ -426,47 +459,36 @@ export class AttendancePage {
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
 
     if(this.group_id == 'all'){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
-      .update({
-        id : dateId,
-        date : Date(),                                                         
-        lateTime : lateTime,
-        lateScore : lateScore,
-        onTimeScore : onTimeScore,
-        countLate : 0,
-        countMiss : this.studentCount,
-        countOnTime : 0,
-        countLeave : 0,
-    });
-      // Set 0 Score
-      for(var i=0 ; i<this.studentList.length ; i++){
-        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
-          .update({
-            score : 0,
-            status : 'Missed Class',
-        });
-      }     
-      /// ++ ALL
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/all/schedule/attendance/${dateId}`)
-      .update({
-        id : dateId,
-        date : Date(),                                                         
-        lateTime : lateTime,
-        lateScore : lateScore,
-        onTimeScore : onTimeScore,
-        countLate : 0,
-        countMiss : this.studentCount,
-        countOnTime : 0,
-        countLeave : 0,
-    });
-      // Set 0 Score
-      for(var i=0 ; i<this.studentList.length ; i++){
-        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/all/students/${this.studentList[i].id}/attendance/${dateId}`)
-          .update({
-            score : 0,
-            status : 'Missed Class',
-        });
-      } 
+      let gId='';
+      for(var i=0 ; i<this.groupList.length; i++){
+        console.log(this.groupList.length);
+        console.log('IN ALL LOOP '+this.groupList[i].id);
+        gId = this.groupList[i].id;
+        console.log(gId);
+        
+        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/schedule/attendance/${dateId}`)
+        .update({
+          id : dateId,
+          date : Date(),                                                         
+          lateTime : lateTime,
+          lateScore : lateScore,
+          onTimeScore : onTimeScore,
+          countLate : 0,
+          countMiss : this.studentCount,
+          countOnTime : 0,
+          countLeave : 0,
+          insertFrom : 'All Group Scan'
+      });
+
+        for(var i=0 ; i<this.studentList.length ; i++){
+          this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/students/${this.studentList[i].id}/attendance/${dateId}`)
+            .update({
+              score : 0,
+              status : 'Missed Class',
+          });
+        } 
+      }
+      
       ////////////////////////////////////////////////
     }else{
       this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
@@ -480,6 +502,7 @@ export class AttendancePage {
         countMiss : this.studentCount,
         countOnTime : 0,
         countLeave : 0,
+        insertFrom : this.group_id+' Scan'
     });
       // Set 0 Score
       for(var i=0 ; i<this.studentList.length ; i++){
