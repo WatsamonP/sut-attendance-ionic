@@ -60,7 +60,7 @@ export class AttendancePage {
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
     this.course_group = navParams.get('course_group');
-    
+    this.group_id = this.course_group.id;
 
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
