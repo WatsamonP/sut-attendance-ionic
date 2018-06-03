@@ -12,6 +12,7 @@ import { AuthServiceProvider } from '../../../services/auth.service';
 export class QuizModalPersonPage {
   scoreSelect : Number;
   course_id : String;
+  group_id : string;
   quiz_id : String;
   activity : {id: '', name: ''};
   barcodeData : String;
@@ -35,6 +36,7 @@ export class QuizModalPersonPage {
       this.countScan = navParams.get('countScan');
       this.activity = navParams.get('activity');
       this.totalScore = navParams.get('totalScore');
+      this.group_id = navParams.get('group_id');
       this.structure = {lower: 1, upper: 10};
 
       let temp = Number(this.structure.upper);
@@ -109,18 +111,18 @@ export class QuizModalPersonPage {
     let scoreNo = Number(this.scoreSelect);
     countScan = countScan+1;
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`)
     .update({
       count : countScan,
     });
     
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
       .update({
         score : scoreNo,
         date : Date(),
       });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
       .set({
         id : barcodeDataText,
     });

@@ -21,6 +21,8 @@ export class QuizPage {
   course_id : string;
   course_name : string;
   activity : {id: '',name: ''};
+  course_group : any;
+  group_id : string;
   //Model & List
   studentList: Student[];
   courseList : Course[];
@@ -46,9 +48,11 @@ export class QuizPage {
 
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
+    this.course_group = navParams.get('course_group');
+    this.group_id = this.course_group.id;
     this.activity = navParams.get('activity');
-    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
-    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
+    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}`;
+    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
     this.isToggled = false;
 
     //Query scheduleQuizList
@@ -109,6 +113,7 @@ export class QuizPage {
       status : '1',
       course_id: this.course_id,
       quiz_id: quiz_id,
+      group_id: this.group_id,
       activity : this.activity,
       totalScore: this.totalScore
     });
@@ -177,7 +182,7 @@ export class QuizPage {
 
   saveSetting(id, totalScore){
     this.totalScore = Number(totalScore);
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`)
         .update({
           totalScore : this.totalScore,
       });
@@ -208,6 +213,7 @@ export class QuizPage {
             let quizModal = this.modalCtrl.create(QuizModalPage, { 
               status : '0',
               course_id: this.course_id,
+              group_id : this.group_id,
               activity : this.activity,
               totalScore: this.totalScore
             });
@@ -287,7 +293,7 @@ export class QuizPage {
     let totalScore = Number(this.totalScore);
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
     this.testData = dateId;
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${dateId}`)
         .update({
           id : dateId,
           date : Date(),                                                         
@@ -296,7 +302,7 @@ export class QuizPage {
       });
     // Set 0 Score
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
         .update({
           score : 0,
       });
@@ -383,6 +389,7 @@ export class QuizPage {
     let profileModal = this.modalCtrl.create(QuizModalPersonPage, { 
       course_id: this.course_id,
       quiz_id: quiz_id,
+      group_id : this.group_id,
       barcodeData: barcodeData,
       countScan : countScan,
       activity : this.activity,
@@ -399,11 +406,11 @@ export class QuizPage {
   // Function
   /////////////////////////////////////////////////////////////////////
   deleteQuiz(id : String){
-    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`;
+    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`;
     this.db.object(path).remove();
     
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${id}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/${this.activity.id}/${id}`)
         .remove();
     } 
   }

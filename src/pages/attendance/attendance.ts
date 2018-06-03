@@ -60,7 +60,7 @@ export class AttendancePage {
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
     this.course_group = navParams.get('course_group');
-    this.group_id = this.course_group.id;
+    
 
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
@@ -425,26 +425,73 @@ export class AttendancePage {
     this.onTimeScore = onTimeScore;
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
-        .update({
-          id : dateId,
-          date : Date(),                                                         
-          lateTime : lateTime,
-          lateScore : lateScore,
-          onTimeScore : onTimeScore,
-          countLate : 0,
-          countMiss : this.studentCount,
-          countOnTime : 0,
-          countLeave : 0,
-      });
-    // Set 0 Score
-    for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
-        .update({
-          score : 0,
-          status : 'Missed Class',
-      });
+    if(this.group_id == 'all'){
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
+      .update({
+        id : dateId,
+        date : Date(),                                                         
+        lateTime : lateTime,
+        lateScore : lateScore,
+        onTimeScore : onTimeScore,
+        countLate : 0,
+        countMiss : this.studentCount,
+        countOnTime : 0,
+        countLeave : 0,
+    });
+      // Set 0 Score
+      for(var i=0 ; i<this.studentList.length ; i++){
+        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
+          .update({
+            score : 0,
+            status : 'Missed Class',
+        });
+      }     
+      /// ++ ALL
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/all/schedule/attendance/${dateId}`)
+      .update({
+        id : dateId,
+        date : Date(),                                                         
+        lateTime : lateTime,
+        lateScore : lateScore,
+        onTimeScore : onTimeScore,
+        countLate : 0,
+        countMiss : this.studentCount,
+        countOnTime : 0,
+        countLeave : 0,
+    });
+      // Set 0 Score
+      for(var i=0 ; i<this.studentList.length ; i++){
+        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/all/students/${this.studentList[i].id}/attendance/${dateId}`)
+          .update({
+            score : 0,
+            status : 'Missed Class',
+        });
+      } 
+      ////////////////////////////////////////////////
+    }else{
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
+      .update({
+        id : dateId,
+        date : Date(),                                                         
+        lateTime : lateTime,
+        lateScore : lateScore,
+        onTimeScore : onTimeScore,
+        countLate : 0,
+        countMiss : this.studentCount,
+        countOnTime : 0,
+        countLeave : 0,
+    });
+      // Set 0 Score
+      for(var i=0 ; i<this.studentList.length ; i++){
+        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
+          .update({
+            score : 0,
+            status : 'Missed Class',
+        });
+      }
     }
+
+    
  
     // then Scan
     this.scanQR(dateId);

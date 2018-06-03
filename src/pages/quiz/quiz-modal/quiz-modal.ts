@@ -18,6 +18,7 @@ export class QuizModalPage {
   course_id : String;
   status: String;
   quiz_id: String;
+  group_id : string;
   activity : {id: '', name: ''};
   totalScore : Number;
   //Model & List
@@ -45,10 +46,11 @@ export class QuizModalPage {
       this.quiz_id = navParams.get('quiz_id');
       this.activity = navParams.get('activity');
       this.totalScore = navParams.get('totalScore');
+      this.group_id = navParams.get('group_id');
       this.structure = {lower: 1, upper: 10};
 
-      const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
-      const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
+      const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}`;
+      const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
 
     //Query scheduleQuizList
     this.db.list(coursePath).snapshotChanges().map(actions => {
@@ -222,7 +224,7 @@ export class QuizModalPage {
   createNewQuiz(){
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${dateId}`)
         .update({
           id : dateId,
           date : Date(),                                                         
@@ -231,7 +233,7 @@ export class QuizModalPage {
       });
     // Set 0 Score
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
         .update({
           score : 0,
       });
@@ -245,18 +247,18 @@ export class QuizModalPage {
     let scoreNo = Number(this.scoreSelect);
     countScan = countScan+1;
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`)
     .update({
       count : countScan,
     });
     
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
       .update({
         score : scoreNo,
         date : Date(),
       });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
       .set({
         id : barcodeDataText,
     });
