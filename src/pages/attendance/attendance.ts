@@ -192,7 +192,7 @@ export class AttendancePage {
   onClickCreateLeaveString(id,onTimeScore) {
     let prompt = this.alertCtrl.create({
       title: 'กำหนดคะแนน',
-      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
+      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 0.5",
       inputs: [
         {
           name: 'stdId',
@@ -215,7 +215,9 @@ export class AttendancePage {
         {
           text: 'Save',
           handler: data => {
-            console.log(Number(data.leaveScore) +' > '+ Number(onTimeScore));
+            if(Number(data.leaveScore) == 0){
+              data.leaveScore = 0.5;
+            }
             if(Number(data.leaveScore) > Number(onTimeScore)){
               this.errorScoreAlertLeave();
             }else{
@@ -238,7 +240,7 @@ export class AttendancePage {
   onClickCreateLeaveScan(id,onTimeScore) {
     let prompt = this.alertCtrl.create({
       title: 'กำหนดคะแนน',
-      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
+      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 0.5",
       inputs: [
         {
           name: 'leaveScore',
@@ -256,7 +258,9 @@ export class AttendancePage {
         {
           text: 'Save',
           handler: data => {
-            console.log(Number(data.leaveScore) +' > '+ Number(onTimeScore));
+            if(Number(data.leaveScore) == 0){
+              data.leaveScore = 0.5;
+            }
             if(Number(data.leaveScore) > Number(onTimeScore)){
               this.errorScoreAlertLeave();
             }else{
@@ -569,7 +573,7 @@ export class AttendancePage {
     this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
       if (barcodeData.cancelled) {
         console.log("User cancelled the action!");
-        this.navCtrl.getViews();
+        this.navCtrl.setRoot(AttendancePage);
         return false;
       }
 
