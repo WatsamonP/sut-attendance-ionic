@@ -28,12 +28,12 @@ import { HttpModule } from '@angular/http';
   declarations: [
     MyApp,
     HomePage,
-    /*LoginPage,
+    LoginPage,
     AttendancePage,
     QuizPage,
     QuizModalPage,
     QuizModalPersonPage,
-    AboutMePage*/
+    AboutMePage
   ],
   imports: [
     BrowserModule,
