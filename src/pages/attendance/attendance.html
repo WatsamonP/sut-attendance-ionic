@@ -17,7 +17,6 @@
       </ion-item>
         <ion-card-content >
           <p>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
-          <p>กลุ่มเรียน : {{course_group.name}}</p>
           <hr >
   
           <button ion-button color="b-create" small block (click)="onClickCreate()">
@@ -36,7 +35,7 @@
               </ion-col>
               <ion-col></ion-col>
               <ion-col col-3 style="text-align: right">
-                <ion-toggle [(ngModel)]="isToggled"></ion-toggle>
+                ASC/DESC <ion-toggle [(ngModel)]="isToggled"></ion-toggle>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -44,8 +43,6 @@
         
     <ion-list>
       <div *ngIf="isToggled==true">
-        <!--ion-item-sliding *ngFor="let item of ( scheduleAttendanceList | orderBy:'FIELD_TO_SORT_BY':true) ; let i = index; let odd = odd"-->
-        
         <ion-item-sliding *ngFor="let item of scheduleAttendanceList.slice().reverse() ; let i = index; let odd = odd">
           <ion-item>
             <ion-row>
@@ -66,24 +63,35 @@
                     </ion-col>
                   </ion-row>
                 </div>
-                <p>เวลาสาย : {{item.lateTime}}  |  คะแนนสาย : {{item.lateScore}}</p>
+                <p>เวลาสาย : {{item.lateTime | date:'HH:mm'}}  |  คะแนนสาย : {{item.lateScore}}</p>
               </div>
             </ion-row>
             <ion-row ion-text [color]="odd ? 'tone1' : 'tone2'">
-              <ion-col style="text-align: center">
-                <h6><ion-icon name="happy"></ion-icon> มาเรียน : {{item.countOnTime+item.countLate}} </h6></ion-col>
-              <ion-col style="text-align: center">
+              <!--ion-col col-2 style="text-align: center"><h6><ion-icon name="arrow-back"></ion-icon></h6></ion-col--> 
+              <ion-col style="text-align: left; padding-left: 10%">
+                <h6 ion-text color='success'>
+                  <ion-icon name="happy"></ion-icon> มาเรียน : {{item.countOnTime+item.countLate}} </h6>
+                <h6 ion-text color='danger2'>
+                  <ion-icon name="sad"></ion-icon> ขาดเรียน : {{item.countMiss}} </h6>
+              </ion-col>
+              <!--ion-col style="text-align: center">
                   <h6><ion-icon name="sad"></ion-icon> ขาด : {{item.countMiss}} </h6></ion-col> 
                 
-              <ion-col col-2 style="text-align: center"><h6> | </h6></ion-col> 
-              <ion-col style="text-align: center">
-                <h6> สาย : {{item.countLate}} </h6></ion-col> 
+              <ion-col col-2 style="text-align: center"><h6> | </h6></ion-col--> 
+              <ion-col style="text-align: left; padding-left: 5%">
+                <h6>ตรงเวลา : {{item.countOnTime}}</h6>
+                <h6>สาย : {{item.countLate}} | ลา : {{item.countLeave}} </h6>
+              </ion-col> 
             </ion-row>
           </ion-item>
           <ion-item-options side="right">
+            <button ion-button color="primary" (click)="onClickUpdateAttendanceLeave(item.id, item)">
+              <ion-icon name="medkit" style="font-size: 25px"></ion-icon>
+              Leave/Sick
+            </button>
             <button ion-button color="secondary" (click)="onClickUpdateAttendance(item.id, item)">
               <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
-              SCAN
+              SCAN REPEAT
             </button>
           </ion-item-options>
             
@@ -149,7 +157,7 @@
             </button>
             <button ion-button color="secondary" (click)="onClickUpdateAttendance(item.id, item)">
               <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
-              SCAN
+              SCAN REPEAT
             </button>
           </ion-item-options>
             

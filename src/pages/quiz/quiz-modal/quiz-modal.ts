@@ -16,9 +16,9 @@ import { Identifiers } from '@angular/compiler';
 export class QuizModalPage {
   //navParams
   course_id : String;
+  course_name : String;
   status: String;
   quiz_id: String;
-  group_id : string;
   activity : {id: '', name: ''};
   totalScore : Number;
   //Model & List
@@ -42,15 +42,15 @@ export class QuizModalPage {
     public platform: Platform) {
 
       this.course_id = navParams.get('course_id');
+      this.course_name = navParams.get('course_name');
       this.status = navParams.get('status');
       this.quiz_id = navParams.get('quiz_id');
       this.activity = navParams.get('activity');
       this.totalScore = navParams.get('totalScore');
-      this.group_id = navParams.get('group_id');
       this.structure = {lower: 1, upper: 10};
 
-      const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}`;
-      const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
+      const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
+      const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
 
     //Query scheduleQuizList
     this.db.list(coursePath).snapshotChanges().map(actions => {
@@ -224,7 +224,7 @@ export class QuizModalPage {
   createNewQuiz(){
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${dateId}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
         .update({
           id : dateId,
           date : Date(),                                                         
@@ -233,7 +233,7 @@ export class QuizModalPage {
       });
     // Set 0 Score
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
         .update({
           score : 0,
       });
@@ -247,18 +247,18 @@ export class QuizModalPage {
     let scoreNo = Number(this.scoreSelect);
     countScan = countScan+1;
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
     .update({
       count : countScan,
     });
     
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
       .update({
         score : scoreNo,
         date : Date(),
       });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
       .set({
         id : barcodeDataText,
     });
@@ -318,23 +318,27 @@ export class QuizModalPage {
   public scanQR(id) {
 
     this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
-      if (barcodeData.cancelled) {
-        console.log("User cancelled the action!");
+      
+      if (!barcodeData.cancelled) {
+        let stdFlag = this.checkStudentClass(barcodeData.text,id);
+        if(stdFlag){
+          this.checkQuiz(barcodeData.text,id); 
+        }else{
+          this.errorStudentFlag(id);
+        }
+      }else{
+        this.viewCtrl.dismiss('close');
+        /*
+        this.navCtrl.push(QuizPage, {
+          course_id: this.course_id,
+          course_name: this.course_name,
+          activity : this.activity
+        }).then(() => {
+          this.navCtrl.pop();
+        })
+        */
         return false;
       }
-
-      let stdFlag = this.checkStudentClass(barcodeData.text,id);
-      if(stdFlag){
-        this.checkQuiz(barcodeData.text,id); 
-      }else{
-        this.errorStudentFlag(id);
-      }
-
-      /*
-      if(barcodeData.cancelled==false){
-        this.checkQuiz(barcodeData.text,id);
-      }
-      */
       
       console.log(barcodeData);
 

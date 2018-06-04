@@ -21,8 +21,6 @@ export class QuizPage {
   course_id : string;
   course_name : string;
   activity : {id: '',name: ''};
-  course_group : any;
-  group_id : string;
   //Model & List
   studentList: Student[];
   courseList : Course[];
@@ -48,11 +46,9 @@ export class QuizPage {
 
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
-    this.course_group = navParams.get('course_group');
-    this.group_id = this.course_group.id;
     this.activity = navParams.get('activity');
-    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}`;
-    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
+    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
+    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
     this.isToggled = false;
 
     //Query scheduleQuizList
@@ -95,13 +91,12 @@ export class QuizPage {
   /////////////////////////////////////////////////////////////////////
   // FOR CREATE NEW
   public onClickCreateScanOption0(){  // Score -> Scan
-    this.totalScoreSet();
+    this.totalScoreSet('0');
   }
 
 
   public onClickCreateScanOption1(){  // Scan -> Score
-    this.totalScoreSet();
-    this.crateScanOption1();
+    this.totalScoreSet('1');
   }
   /////////////////////////////////////////////////////////////////////
   // FOR UPDATE
@@ -112,8 +107,8 @@ export class QuizPage {
     let quizModal = this.modalCtrl.create(QuizModalPage, { 
       status : '1',
       course_id: this.course_id,
+      course_name: this.course_name,
       quiz_id: quiz_id,
-      group_id: this.group_id,
       activity : this.activity,
       totalScore: this.totalScore
     });
@@ -182,13 +177,13 @@ export class QuizPage {
 
   saveSetting(id, totalScore){
     this.totalScore = Number(totalScore);
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
         .update({
           totalScore : this.totalScore,
       });
   }
 
-  totalScoreSet() {
+  totalScoreSet(state) {
     let prompt = this.alertCtrl.create({
       title: 'จัดการคะแนน',
       message: "กำหนดคะแนนเต็มสำหรับ "+this.activity.name+" นี้",
@@ -210,14 +205,19 @@ export class QuizPage {
           text: 'Save',
           handler: data => {
             this.totalScore = data.totalScore;
-            let quizModal = this.modalCtrl.create(QuizModalPage, { 
-              status : '0',
-              course_id: this.course_id,
-              group_id : this.group_id,
-              activity : this.activity,
-              totalScore: this.totalScore
-            });
-            quizModal.present();
+            if(state == '0'){
+              let quizModal = this.modalCtrl.create(QuizModalPage, { 
+                status : '0',
+                course_id: this.course_id,
+                activity : this.activity,
+                totalScore: this.totalScore
+              });
+              quizModal.present();
+            }else if(state == '1'){
+              this.crateScanOption1();
+            }else{
+              console.log('error');
+            }
           }
         }
       ]
@@ -293,7 +293,7 @@ export class QuizPage {
     let totalScore = Number(this.totalScore);
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
     this.testData = dateId;
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${dateId}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
         .update({
           id : dateId,
           date : Date(),                                                         
@@ -302,7 +302,7 @@ export class QuizPage {
       });
     // Set 0 Score
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
         .update({
           score : 0,
       });
@@ -360,23 +360,24 @@ export class QuizPage {
 
   scanOption1(quiz_id) {
     this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
-      if (barcodeData.cancelled) {
-        console.log("User cancelled the action!");
+
+      if (!barcodeData.cancelled) {
+        let stdFlag = this.checkStudentClass(barcodeData.text,quiz_id);
+        if(stdFlag){
+          this.checkQuiz(barcodeData.text,quiz_id); 
+        }else{
+          this.errorStudentFlag(quiz_id);
+        }
+      }else{
+        this.navCtrl.push(QuizPage, {
+          course_id: this.course_id,
+          course_name: this.course_name,
+          activity : this.activity
+        }).then(() => {
+          this.navCtrl.pop();
+        })
         return false;
       }
-
-      let stdFlag = this.checkStudentClass(barcodeData.text,quiz_id);
-      if(stdFlag){
-        this.checkQuiz(barcodeData.text,quiz_id); 
-      }else{
-        this.errorStudentFlag(quiz_id);
-      }
-
-      /*
-      if(barcodeData.cancelled==false){
-        this.checkQuiz(barcodeData.text, quiz_id);
-      }
-      */
 
       console.log(barcodeData);
       }, (err) => {
@@ -389,7 +390,6 @@ export class QuizPage {
     let profileModal = this.modalCtrl.create(QuizModalPersonPage, { 
       course_id: this.course_id,
       quiz_id: quiz_id,
-      group_id : this.group_id,
       barcodeData: barcodeData,
       countScan : countScan,
       activity : this.activity,
@@ -406,11 +406,11 @@ export class QuizPage {
   // Function
   /////////////////////////////////////////////////////////////////////
   deleteQuiz(id : String){
-    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/${this.activity.id}/${id}`;
+    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`;
     this.db.object(path).remove();
     
     for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/${this.activity.id}/${id}`)
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${id}`)
         .remove();
     } 
   }

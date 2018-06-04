@@ -12,7 +12,7 @@ import { QuizModalPersonPage } from '../pages/quiz/quiz-modal-person/quiz-modal-
 import { AboutMePage } from '../pages/about-me/about-me';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-
+import { Toast } from '@ionic-native/toast';
 //firebase
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -28,12 +28,12 @@ import { HttpModule } from '@angular/http';
   declarations: [
     MyApp,
     HomePage,
-    LoginPage,
+    /*LoginPage,
     AttendancePage,
     QuizPage,
     QuizModalPage,
     QuizModalPersonPage,
-    AboutMePage,
+    AboutMePage*/
   ],
   imports: [
     BrowserModule,
@@ -60,7 +60,8 @@ import { HttpModule } from '@angular/http';
     AuthServiceProvider,
     AngularFireAuth,
     BarcodeScanner,
-    CourseService
+    CourseService,
+    Toast
   ],
 })
 export class AppModule {}

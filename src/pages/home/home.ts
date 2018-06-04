@@ -37,14 +37,13 @@ export class HomePage {
       });
   }
 
-  gotoAttendance(cid : string, cname : string, group : string){
+  selectedCourse(cid : string, cname : string){
     this.navCtrl.push(AttendancePage, {
       course_id: cid,
-      course_name: cname,
-      course_group : group
+      course_name: cname
     });
   }
-
+  /*
   selectGroup(cid,cname,img,activity){
     this.groupList = [];
     let group;
@@ -99,6 +98,7 @@ export class HomePage {
     });
     alert.present();
   }
+  */
 
   showRadio(cid : string, cname : string,group : any, img: String) {
     console.log(group);
@@ -110,9 +110,8 @@ export class HomePage {
       type: 'radio', label: 'Quiz', value: 'quiz', checked: false });
     alert.addInput({
       type: 'radio', label: 'Homework', value: 'hw', checked: false });
-    if(group.id == 'all'){
-      alert.addInput({ type: 'radio', label: 'Change Color', value: 'color',checked: false });
-    }
+    alert.addInput({ type: 'radio', label: 'Change Color', value: 'color',checked: false });
+    
     alert.addButton('Cancel');
     alert.addButton({
       text: 'OK',
@@ -124,20 +123,17 @@ export class HomePage {
           this.navCtrl.push(AttendancePage, {
             course_id: cid,
             course_name: cname,
-            course_group : group
           });
         }else if(data == 'quiz'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
-            course_group : group,
             activity : {id: 'quiz', name: 'QUIZ'}
           });
         }else if(data == 'hw'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
-            course_group : group,
             activity : {id: 'hw', name: 'HOMEWORK'}
           });
         }

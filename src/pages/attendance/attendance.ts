@@ -9,6 +9,8 @@ import { Student } from '../../services/student.model';
 import { Course } from '../../services/course.model';
 import moment from 'moment';
 import { HomePage } from '../home/home';
+import { Toast } from '@ionic-native/toast';
+import { ToastController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -19,12 +21,9 @@ export class AttendancePage {
   //navParams
   course_id : string;
   course_name : string;
-  course_group : any;
-  group_id : string;
   //Model & List
   studentList: Student[];
   courseList : Course[];
-  groupList : any;
   scheduleAttendanceList : any;
   studentDataList : any;
   // Val
@@ -56,15 +55,15 @@ export class AttendancePage {
     private barcodeScanner: BarcodeScanner,
     private platform: Platform,
     private menu: MenuController,
-    public appCtrl: App) {
+    public appCtrl: App,
+    private toast: Toast,
+    private toastCtrl: ToastController) {
 
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
-    this.course_group = navParams.get('course_group');
-    this.group_id = this.course_group.id;
 
-    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance`;
-    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students`;
+    const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance`;
+    const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
     this.isToggled = false;
 
     //Query scheduleAttendanceList
@@ -83,27 +82,6 @@ export class AttendancePage {
         this.studentCount = this.studentList.length;
           return items.map(item => item.key);
       });
-
-      
-      this.db.list(`users/${this.auth.currentUserId()}/course/`).snapshotChanges().map(actions => {
-        return actions.map(action => ({ key: action.key, ...action.payload.val() }));
-      }).subscribe(items => {
-        this.courseList = items;
-        this.groupList = [];
-        for(var i=0; i<this.courseList.length; i++){
-          if(this.courseList[i].id == this.course_id ){
-            this.groupList = Object.keys(this.courseList[i].group)
-              .map(key => Object.assign({ key }, this.courseList[i].group[key]));
-          }
-        }
-        return items.map(item => item.key);
-      });
-
-      
-
-      
-
-
   }
 
   ionViewDidLoad() {
@@ -185,11 +163,10 @@ export class AttendancePage {
 
   onClickCreateLeaveOption(id,onTimeScore) {
     let prompt = this.alertCtrl.create({
-      title: 'กำหนดคะแนน',
-      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา",
+      title: 'เลือกรายการ',
       buttons: [
         {
-          text: 'Scan',
+          text: 'สแกน',
           handler: data => {
             this.onClickCreateLeaveScan(id,onTimeScore)
           }
@@ -211,7 +188,7 @@ export class AttendancePage {
   onClickCreateLeaveString(id,onTimeScore) {
     let prompt = this.alertCtrl.create({
       title: 'กำหนดคะแนน',
-      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 0.5",
+      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 1",
       inputs: [
         {
           name: 'stdId',
@@ -235,7 +212,7 @@ export class AttendancePage {
           text: 'Save',
           handler: data => {
             if(Number(data.leaveScore) == 0){
-              data.leaveScore = 0.5;
+              data.leaveScore = 1;
             }
             if(Number(data.leaveScore) > Number(onTimeScore)){
               this.errorScoreAlertLeave();
@@ -246,7 +223,7 @@ export class AttendancePage {
               if(stdFlag){
                 this.checkAttendance(data.stdId,id); 
               }else{
-                this.errorStudentFlag(id);
+                this.errorStudentFlag(id,'Leave');
               }
             }
           }
@@ -259,7 +236,7 @@ export class AttendancePage {
   onClickCreateLeaveScan(id,onTimeScore) {
     let prompt = this.alertCtrl.create({
       title: 'กำหนดคะแนน',
-      message: "กำหนดคะแนนสำหรับนึกศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 0.5",
+      message: "กำหนดคะแนนสำหรับนักศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 1",
       inputs: [
         {
           name: 'leaveScore',
@@ -306,27 +283,11 @@ export class AttendancePage {
   }
 
   onClickDelete(id : String){
-
-    if(this.group_id == 'all'){
-      let gId='';
-      for(var i=0 ; i<this.groupList.length; i++){
-        gId = this.groupList[i].id;
-        let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/schedule/attendance/${id}`;
-        this.db.object(path).remove();
-    
-        for(var i=0 ; i<this.studentList.length ; i++){
-        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/students/${this.studentList[i].id}/attendance/${id}`)
+    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`;
+    this.db.object(path).remove();
+    for(var i=0 ; i<this.studentList.length ; i++){
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/attendance/${id}`)
         .remove();
-      }
-      
-      }
-    }else{
-      let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`;
-      this.db.object(path).remove();
-      for(var i=0 ; i<this.studentList.length ; i++){
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${id}`)
-        .remove();
-      }
     }
   }
 
@@ -411,14 +372,16 @@ export class AttendancePage {
     alert.present();
   }
 
-  errorStudentFlag(id) {
+  errorStudentFlag(id,attStatus) {
     let alert = this.alertCtrl.create({
       title: 'ERROR !',
       subTitle: 'ไม่มีรหัสนักศึกษา ในคลาสนี้',
       buttons: [{
         text: 'OK',
         handler: () => {
-          this.scanQR(id);
+          if(attStatus != 'Leave'){
+            this.scanQR(id);
+          }
         }}
       ]
     });
@@ -457,65 +420,25 @@ export class AttendancePage {
     this.lateScore = lateScore;
     this.onTimeScore = onTimeScore;
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
-
-    if(this.group_id == 'all'){
-      let gId='';
-      for(var i=0 ; i<this.groupList.length; i++){
-        console.log(this.groupList.length);
-        console.log('IN ALL LOOP '+this.groupList[i].id);
-        gId = this.groupList[i].id;
-        console.log(gId);
-        
-        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/schedule/attendance/${dateId}`)
-        .update({
-          id : dateId,
-          date : Date(),                                                         
-          lateTime : lateTime,
-          lateScore : lateScore,
-          onTimeScore : onTimeScore,
-          countLate : 0,
-          countMiss : this.studentCount,
-          countOnTime : 0,
-          countLeave : 0,
-          insertFrom : 'All Group Scan'
-      });
-
-        for(var i=0 ; i<this.studentList.length ; i++){
-          this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${gId}/students/${this.studentList[i].id}/attendance/${dateId}`)
-            .update({
-              score : 0,
-              status : 'Missed Class',
-          });
-        } 
-      }
-      
-      ////////////////////////////////////////////////
-    }else{
-      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${dateId}`)
-      .update({
-        id : dateId,
-        date : Date(),                                                         
-        lateTime : lateTime,
-        lateScore : lateScore,
-        onTimeScore : onTimeScore,
-        countLate : 0,
-        countMiss : this.studentCount,
-        countOnTime : 0,
-        countLeave : 0,
-        insertFrom : this.group_id+' Scan'
+  
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${dateId}`)
+    .update({
+      id : dateId,
+      date : Date(),                                                         
+      lateTime : lateTime,
+      lateScore : lateScore,
+      onTimeScore : onTimeScore,
+      countLate : 0, countMiss : this.studentCount, countOnTime : 0, countLeave : 0,
     });
-      // Set 0 Score
-      for(var i=0 ; i<this.studentList.length ; i++){
-        this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
-          .update({
-            score : 0,
-            status : 'Missed Class',
-        });
-      }
+    // Set 0 Score
+    for(var i=0 ; i<this.studentList.length ; i++){
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/attendance/${dateId}`)
+        .update({
+          score : 0,
+          status : 'Missed Class',
+      });
     }
 
-    
- 
     // then Scan
     this.scanQR(dateId);
   }
@@ -567,7 +490,6 @@ export class AttendancePage {
 
   updateAttendance(id,countLate,countMiss,countOnTime,countLeave, barcodeDataText){
     let scoreNo = Number(this.attendance_score);
-
     if(this.attendance_status=='Late'){
       countLate = countLate+1;
       countMiss = countMiss-1;
@@ -579,7 +501,7 @@ export class AttendancePage {
       countMiss = countMiss-1;
     }
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`)
     .update({
       countLate : countLate,
       countMiss : countMiss,
@@ -587,26 +509,32 @@ export class AttendancePage {
       countLeave : countLeave,
     });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/students/${barcodeDataText}/attendance/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/attendance/${id}`)
       .update({
         score : scoreNo,
         date : Date(),
         status : this.attendance_status,
       });
 
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}/checked/${barcodeDataText}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}/checked/${barcodeDataText}`)
       .set({
         id : barcodeDataText,
     });
     /////////////////////////////////
-    this.scanQR(id); 
+    
+    if(this.attendance_status=='Leave'){
+      console.log('success create leave student');
+    }else{
+      this.scanQR(id); 
+    }
+    
   }
 
   saveSetting(id, lateTime, lateScore, onTimeScore){
     this.lateTime = lateTime;
     this.lateScore = lateScore;
     this.onTimeScore = onTimeScore;
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/group/${this.group_id}/schedule/attendance/${id}`)
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance/${id}`)
         .update({
           lateTime : lateTime,
           lateScore : lateScore,
@@ -635,27 +563,34 @@ export class AttendancePage {
     showTorchButton : true,
     prompt : "ให้ตำแหน่งของ barcode อยู่ภายในพื้นที่ scan",
     disableSuccessBeep: false,
-    resultDisplayDuration : 1500
+    resultDisplayDuration : 1500,
+    orientation : "portrait",
   };
+
+  
 
 
   public scanQR(id) {
     this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
-      if (barcodeData.cancelled) {
-        console.log("User cancelled the action!");
-        this.navCtrl.setRoot(AttendancePage);
+
+      if (!barcodeData.cancelled) {
+        let stdFlag = this.checkStudentClass(barcodeData.text,id);
+        if(stdFlag){
+          this.checkAttendance(barcodeData.text,id);
+        }else{
+          this.errorStudentFlag(id,'other');
+        }
+      }else{
+        this.navCtrl.push(AttendancePage, {
+          course_id: this.course_id,
+          course_name: this.course_name,
+        }).then(() => {
+          this.navCtrl.pop();
+        })
         return false;
       }
-
-      let stdFlag = this.checkStudentClass(barcodeData.text,id);
-      if(stdFlag){
-        this.checkAttendance(barcodeData.text,id); 
-      }else{
-        this.errorStudentFlag(id);
-      }
-      console.log(barcodeData);
-      }, (err) => {
-        console.log(err);
+    },(err) => {
+      console.log(err);
     });
   }
 
