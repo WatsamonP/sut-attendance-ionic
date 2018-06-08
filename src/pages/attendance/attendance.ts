@@ -65,6 +65,7 @@ export class AttendancePage {
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
     this.isToggled = false;
+    this.attendance_status = '';
 
     //Query scheduleAttendanceList
     this.db.list(coursePath).snapshotChanges().map(actions => {
@@ -581,12 +582,14 @@ export class AttendancePage {
           this.errorStudentFlag(id,'other');
         }
       }else{
+        /*
         this.navCtrl.push(AttendancePage, {
           course_id: this.course_id,
           course_name: this.course_name,
         }).then(() => {
           this.navCtrl.pop();
-        })
+        })*/
+        this.navCtrl.pop();
         return false;
       }
     },(err) => {
