@@ -5,41 +5,41 @@
     </ion-title>
   </ion-navbar>
 </ion-header>
-  
+  <!--[ngStyle]="{'background-image': 'url(' + 'assets/imgs/course/0.png' + ')'};"-->
   <ion-content class="bg">
-    <ion-card>
-      <ion-item>
-        <ion-thumbnail item-start>
-        <img src="{{'assets/imgs/logoApp.png'}}">
-        </ion-thumbnail>
-        <h2>{{course_id}}</h2>
-        <p>{{course_name}}</p>
-      </ion-item>
-        <ion-card-content >
-          <p>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
-          <hr >
-  
-          <button ion-button color="b-create" small block (click)="onClick_Create()">
+    <!--ion-card-->
+      <ion-item [ngStyle]="{
+        'background': 'linear-gradient(0deg, rgba(255, 255, 255, 0.7), 
+                      rgba(255, 255, 255, 0.7)), 
+                      url(assets/imgs/course/'+this.pic+'.png) center center / cover no-repeat'}">
+        <ion-row>
+          <ion-thumbnail item-start>
+            <img src="{{'assets/imgs/logoApp.png'}}">
+          </ion-thumbnail>
+          <div>
+            <h2 ion-text><b>{{course_id}}</b></h2>
+            <p ion-text color="dark">{{course_name}}</p>
+            <p ion-text color="dark"ion-text>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
+          </div>
+        </ion-row>
+        <ion-row><hr >
+          <button ion-button color="primary" small block (click)="onClick_Create()">
             <div>CREATE NEW ATTENDANCE</div>
-          </button>
-    
-        </ion-card-content>
-      </ion-card>
+          </button>          
+        </ion-row>
+      </ion-item>
+
+
 
       
-        <div style="padding-left: 5%;" ion-text color="gray">
-          <ion-grid>
-            <ion-row>
-              <ion-col style="text-align: left">
-                <div style="padding-top: 15px"><b>ATTENDANCE</b></div>
-              </ion-col>
-              <ion-col></ion-col>
-              <ion-col col-3 style="text-align: right">
-                ASC/DESC <ion-toggle [(ngModel)]="isToggled"></ion-toggle>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </div>
+    <ion-item style="padding: 5%">
+      <div item-content ion-text text-right style="font-size: 14px">
+        <b>ATTENDANCE</b>
+      </div>
+      <div item-end ion-text text-right style="font-size: 12px">
+        ASC/DESC<br><ion-toggle [(ngModel)]="isToggled"></ion-toggle>
+      </div>
+    </ion-item>
         
     <ion-list>
       <div *ngIf="isToggled==true">
@@ -145,8 +145,9 @@
                 
               <ion-col col-2 style="text-align: center"><h6> | </h6></ion-col--> 
               <ion-col style="text-align: left; padding-left: 5%">
-                <h6>ตรงเวลา : {{item.countOnTime}}</h6>
-                <h6>สาย : {{item.countLate}} | ลา : {{item.countLeave}} </h6>
+                <h6>ตรงเวลา : {{item.countOnTime}} | สาย : {{item.countLate}}</h6>
+                <h6 ion-text color='warning'>
+                  <ion-icon name="medkit"></ion-icon> ลา : {{item.countLeave}} </h6>
               </ion-col> 
             </ion-row>
           </ion-item>

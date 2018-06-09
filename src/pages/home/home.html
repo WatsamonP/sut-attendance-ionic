@@ -10,12 +10,12 @@
 <ion-content class="bg">
   <div *ngFor="let item of courseList; let i = index">
     <ion-card>
-      <div *ngIf="item.img!='pic'" (click)="showRadio(item.id,item.name,item.img)"
+      <div *ngIf="item.img!='pic'" (click)="showRadio(item.id,item.name,item.img,i)"
           style="height: 180px" [style.backgroundColor]="item.img">
         <div class="card-title">{{item.id}}</div>
         <div class="card-subtitle"><button ion-button round small color="st-light">{{item.name}}</button></div>
       </div>
-      <div *ngIf="item.img=='pic'" (click)="showRadio(item.id,item.name,item.img)">
+      <div *ngIf="item.img=='pic'" (click)="showRadio(item.id,item.name,item.img,i)">
         <img src="{{'assets/imgs/course/' + i + '.png'}}">
         <div class="card-title">{{item.id}}</div>
         <div class="card-subtitle"><button ion-button round small color="st-light">{{item.name}}</button></div>
@@ -24,13 +24,13 @@
       <div class="card-button">
         <ion-row>
           <ion-col style="text-align: center">
-            <button ion-button icon-left clear small color="light" (click)="showRadio(item.id,item.name,item.img)">
+            <button ion-button icon-left clear small color="light" (click)="showRadio(item.id,item.name,item.img,i)">
               <ion-icon name="list-box"></ion-icon>
               <div>OPTION</div>
             </button>
           </ion-col>
           <ion-col style="text-align: center">
-            <button ion-button icon-left clear small color="light" (click)="selectedCourse(item.id,item.name)">
+            <button ion-button icon-left clear small color="light" (click)="selectedCourse(item.id,item.name,i)">
               <ion-icon name="add-circle"></ion-icon>
               <div>เช็คชื่อเข้าเรียน</div>
             </button>

@@ -11,7 +11,7 @@ import moment from 'moment';
 import { HomePage } from '../home/home';
 import { Toast } from '@ionic-native/toast';
 import { ToastController } from 'ionic-angular';
-import { ScanModalPage } from '../scan-modal/scan-modal';
+import { ScanModalPage } from './scan-modal/scan-modal';
 import { ManageAttendancePage } from '../attendance/manage-attendance/manage-attendance';
 import { AttendanceService } from '../../services/attendance.service'
 
@@ -38,6 +38,7 @@ export class AttendancePage {
   lateTime : any;
   onTimeScore : any;
   leaveScore : any;
+  pic : any;
   // TIME
   today = moment().format("DD-MM-YYYY HH:mm"); 
   todayTime = moment().format("HH:mm"); 
@@ -65,10 +66,13 @@ export class AttendancePage {
     private toastCtrl: ToastController,
     public modalCtrl: ModalController,
     private attendance: AttendanceService) {
+
+      
     
-    this.course_id = navParams.get('course_id');
-    this.course_name = navParams.get('course_name');
-    this.activity = navParams.get('activity');
+      this.course_id = navParams.get('course_id');
+      this.course_name = navParams.get('course_name');
+      this.activity = navParams.get('activity');
+      this.pic = navParams.get('pic');
 
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;

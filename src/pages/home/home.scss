@@ -13,9 +13,9 @@ page-home {
     font-size: 2.0em;
     width: 100%;
     font-weight: bold;
-    color: #000000;
-    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
-
+    color: #ffffff;
+    text-shadow: 3px 3px #000000;
+    //text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
   }
 
   .card-subtitle {
@@ -24,7 +24,6 @@ page-home {
     position: absolute;
     top: 45%;
     width: 100%;
-    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
   }
 
   .card-button {

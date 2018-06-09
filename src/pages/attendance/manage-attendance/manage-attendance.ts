@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
 import moment from 'moment';
-import { ScanModalPage } from '../../scan-modal/scan-modal';
 import { AttendanceService } from '../../../services/attendance.service'
 
 @IonicPage()

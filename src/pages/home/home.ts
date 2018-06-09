@@ -39,11 +39,12 @@ export class HomePage {
       });
   }
 
-  selectedCourse(cid : string, cname : string){
+  selectedCourse(cid : string, cname : string,index){
     this.navCtrl.push(AttendancePage, {
       course_id: cid,
       course_name: cname,
-      activity : {id: 'attendance', name: 'ATTENDANCE'}
+      activity : {id: 'attendance', name: 'ATTENDANCE'},
+      pic : index
     });
   }
   /*
@@ -103,7 +104,7 @@ export class HomePage {
   }
   */
 
-  showRadio(cid : string, cname : string,group : any, img: String) {
+  showRadio(cid : string, cname : string,group : any, img: String, index) {
     console.log(group);
     let alert = this.alertCtrl.create();
     alert.setTitle('เลือกรายการที่ต้องการ');
@@ -113,6 +114,8 @@ export class HomePage {
       type: 'radio', label: 'Quiz', value: 'quiz', checked: false });
     alert.addInput({
       type: 'radio', label: 'Homework', value: 'hw', checked: false });
+    alert.addInput({
+      type: 'radio', label: 'Lab', value: 'lab', checked: false });
     alert.addInput({ type: 'radio', label: 'Change Color', value: 'color',checked: false });
     
     alert.addButton('Cancel');
@@ -126,19 +129,29 @@ export class HomePage {
           this.navCtrl.push(AttendancePage, {
             course_id: cid,
             course_name: cname,
-            activity : {id: 'attendance', name: 'ATTENDANCE'}
+            activity : {id: 'attendance', name: 'ATTENDANCE'},
+            pic : index
           });
         }else if(data == 'quiz'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
-            activity : {id: 'quiz', name: 'QUIZ'}
+            activity : {id: 'quiz', name: 'QUIZ'},
+            pic : index
           });
         }else if(data == 'hw'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
-            activity : {id: 'hw', name: 'HOMEWORK'}
+            activity : {id: 'hw', name: 'HOMEWORK'},
+            pic : index
+          });
+        }else if(data == 'lab'){
+          this.navCtrl.push(QuizPage, {
+            course_id: cid,
+            course_name: cname,
+            activity : {id: 'lab', name: 'LAB'},
+            pic : index
           });
         }
       }
