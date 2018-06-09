@@ -19,7 +19,7 @@
           <p>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
           <hr >
   
-          <button ion-button color="b-create" small block (click)="onClickCreate()">
+          <button ion-button color="b-create" small block (click)="onClick_Create()">
             <div>CREATE NEW ATTENDANCE</div>
           </button>
     
@@ -85,22 +85,22 @@
             </ion-row>
           </ion-item>
           <ion-item-options side="right">
-            <button ion-button color="primary" (click)="onClickUpdateAttendanceLeave(item.id, item)">
+            <button ion-button color="primary" (click)="onClick_UpdateAttendanceLeave(item.id, item)">
               <ion-icon name="medkit" style="font-size: 25px"></ion-icon>
               Leave/Sick
             </button>
-            <button ion-button color="secondary" (click)="onClickUpdateAttendance(item.id, item)">
+            <button ion-button color="secondary" (click)="onClick_UpdateAttendance(item.id, item)">
               <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
               SCAN REPEAT
             </button>
           </ion-item-options>
             
           <ion-item-options side="left">
-            <button ion-button color="danger" (click)="showConfirmDelete(item.id)">
+            <button ion-button color="danger" (click)="onClick_Delete(item.id)">
               <ion-icon name="trash" style="font-size: 25px"></ion-icon>
               Delete
             </button>
-            <button ion-button color="gray" (click)="onClickSetting(item.id,item)">
+            <button ion-button color="gray" (click)="onClick_Setting(item.id,item)">
               <ion-icon name="settings" style="font-size: 25px"></ion-icon>
               Setting
             </button>
@@ -151,22 +151,22 @@
             </ion-row>
           </ion-item>
           <ion-item-options side="right">
-            <button ion-button color="primary" (click)="onClickUpdateAttendanceLeave(item.id, item)">
+            <button ion-button color="primary" (click)="onClick_UpdateAttendanceLeave(item.id, item)">
               <ion-icon name="medkit" style="font-size: 25px"></ion-icon>
               Leave/Sick
             </button>
-            <button ion-button color="secondary" (click)="onClickUpdateAttendance(item.id, item)">
+            <button ion-button color="secondary" (click)="onClick_UpdateAttendance(item.id, item)">
               <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
               SCAN REPEAT
             </button>
           </ion-item-options>
             
           <ion-item-options side="left">
-            <button ion-button color="danger" (click)="showConfirmDelete(item.id)">
+            <button ion-button color="danger" (click)="onClick_Delete(item.id)">
               <ion-icon name="trash" style="font-size: 25px"></ion-icon>
               Delete
             </button>
-            <button ion-button color="gray" (click)="onClickSetting(item.id,item)">
+            <button ion-button color="gray" (click)="onClick_Setting(item.id,item)">
               <ion-icon name="settings" style="font-size: 25px"></ion-icon>
               Setting
             </button>

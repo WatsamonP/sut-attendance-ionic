@@ -9,6 +9,9 @@ import { AttendancePage } from '../pages/attendance/attendance';
 import { QuizPage } from '../pages/quiz/quiz';
 import { QuizModalPage } from '../pages/quiz/quiz-modal/quiz-modal';
 import { QuizModalPersonPage } from '../pages/quiz/quiz-modal-person/quiz-modal-person';
+import { ScanModalPage } from '../pages/scan-modal/scan-modal';
+import { ManageAttendancePage } from '../pages/attendance/manage-attendance/manage-attendance';
+
 import { AboutMePage } from '../pages/about-me/about-me';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -21,19 +24,24 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 //services
 import { AuthServiceProvider } from '../services/auth.service';
 import { CourseService } from '../services/course.service';
+import { StudentService } from '../services/student.service';
+import { AttendanceService } from '../services/attendance.service';
 //
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { HttpModule } from '@angular/http';
+
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
+    HomePage,/*
     LoginPage,
     AttendancePage,
     QuizPage,
     QuizModalPage,
     QuizModalPersonPage,
-    AboutMePage
+    AboutMePage,
+    ScanModalPage,
+    ManageAttendancePage*/
   ],
   imports: [
     BrowserModule,
@@ -51,7 +59,9 @@ import { HttpModule } from '@angular/http';
     QuizPage,
     QuizModalPage,
     QuizModalPersonPage,
-    AboutMePage
+    AboutMePage,
+    ScanModalPage,
+    ManageAttendancePage
   ],
   providers: [
     StatusBar,
@@ -61,6 +71,8 @@ import { HttpModule } from '@angular/http';
     AngularFireAuth,
     BarcodeScanner,
     CourseService,
+    StudentService,
+    AttendanceService,
     Toast
   ],
 })

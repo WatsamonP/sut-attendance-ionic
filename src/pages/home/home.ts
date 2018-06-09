@@ -7,6 +7,7 @@ import { Course } from '../../services/course.model';
 import { AttendancePage } from '../../pages/attendance/attendance';
 import { QuizPage } from '../../pages/quiz/quiz';
 import { LoginPage } from '../login/login';
+import { AttendanceService } from '../../services/attendance.service'
 
 @Component({
   selector: 'page-home',
@@ -24,7 +25,8 @@ export class HomePage {
     public navCtrl: NavController,
     private auth: AuthServiceProvider,
     private db: AngularFireDatabase,
-    public alertCtrl: AlertController) {
+    public alertCtrl: AlertController,
+    private attendance: AttendanceService) {
 
       //this.doRefresh(0);
 
@@ -40,7 +42,8 @@ export class HomePage {
   selectedCourse(cid : string, cname : string){
     this.navCtrl.push(AttendancePage, {
       course_id: cid,
-      course_name: cname
+      course_name: cname,
+      activity : {id: 'attendance', name: 'ATTENDANCE'}
     });
   }
   /*
@@ -123,6 +126,7 @@ export class HomePage {
           this.navCtrl.push(AttendancePage, {
             course_id: cid,
             course_name: cname,
+            activity : {id: 'attendance', name: 'ATTENDANCE'}
           });
         }else if(data == 'quiz'){
           this.navCtrl.push(QuizPage, {

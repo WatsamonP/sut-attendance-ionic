@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons end>
+      <button ion-button (click)="closeModal()">Close</button>
+    </ion-buttons>
+    <ion-title>ATTENDANCE</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div ionic-text padding>
+    <div text-center>
+      <h6 ion-text text-center color='primary'>จัดการเวลา-คะแนน</h6>
+      กำหนดเวลาเข้าเรียนสายและคะแนน
+    </div><br>
+    <div *ngIf="createFlag">
+      <b>ค่าเริ่มต้น</b><br>
+      &nbsp;&nbsp;&nbsp; - สาย : 0.5 | ตรงเวลา : 1 | ขาด/ลา : 1<br>
+      &nbsp;&nbsp;&nbsp; - เวลาสาย +10 นาทีจากเวลาปัจจุบัน
+    </div>
+  </div>
+
+
+  <ion-list>
+    <div style="padding-top: 5%;padding-left: 5%"><b ion-text color='primary'>เวลาเข้าเรียนสาย</b></div>
+    <ion-item>
+      <ion-label><ion-icon name="clock"></ion-icon> เวลา</ion-label>
+      <ion-datetime displayFormat="HH:mm" [(ngModel)]="lateTime"></ion-datetime>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <div style="padding-top: 5%;padding-left: 5%"><b ion-text color='primary'>คะแนน</b></div>
+    <ion-item>
+      <ion-label><ion-icon name="sad"></ion-icon> สาย</ion-label>
+      <ion-input type="number" [(ngModel)]="lateScore"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><ion-icon name="happy"></ion-icon> ตรงเวลา</ion-label>
+      <ion-input type="number" [(ngModel)]="onTimeScore"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><ion-icon name="medkit"></ion-icon> ป่วยลา</ion-label>
+      <ion-input type="number" [(ngModel)]="leaveScore"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="createFlag" padding text-center>
+    <button ion-button (click)="onClick_SaveAttendanceSetting()">
+      บันทึก
+    </button>
+  </div>
+
+  <div *ngIf="settingFlag" padding text-center>
+    <button ion-button (click)="onClick_SaveSetting()">
+      บันทึกการตั้งค่า
+    </button>
+  </div>
+</ion-content>
