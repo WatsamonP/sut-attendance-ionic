@@ -34,7 +34,7 @@ import { HttpModule } from '@angular/http';
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,/*
+    HomePage,
     LoginPage,
     AttendancePage,
     QuizPage,
@@ -43,7 +43,7 @@ import { HttpModule } from '@angular/http';
     QuizModalPersonPage,
     AboutMePage,
     ScanModalPage,
-    ManageAttendancePage*/
+    ManageAttendancePage
   ],
   imports: [
     BrowserModule,
