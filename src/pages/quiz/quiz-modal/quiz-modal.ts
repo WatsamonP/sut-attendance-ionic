@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, AlertController, Platform} from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, AlertController, Platform, ModalController} from 'ionic-angular';
 import { QuizPage } from '../quiz';
 import { Student } from '../../../services/student.model';
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -7,6 +7,7 @@ import { AuthServiceProvider } from '../../../services/auth.service';
 import moment from 'moment';
 import { BarcodeScanner } from "@ionic-native/barcode-scanner";
 import { Identifiers } from '@angular/compiler';
+import { ScanQuizPage } from '../scan-quiz/scan-quiz';
 
 @IonicPage()
 @Component({
@@ -39,7 +40,8 @@ export class QuizModalPage {
     private db: AngularFireDatabase,
     private barcodeScanner: BarcodeScanner,
     public alertCtrl: AlertController,
-    public platform: Platform) {
+    public platform: Platform,
+    public modalCtrl: ModalController) {
 
       this.course_id = navParams.get('course_id');
       this.course_name = navParams.get('course_name');
@@ -48,6 +50,7 @@ export class QuizModalPage {
       this.activity = navParams.get('activity');
       this.totalScore = navParams.get('totalScore');
       this.structure = {lower: 1, upper: 10};
+      console.log(this.activity)
 
       const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
       const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
@@ -82,6 +85,7 @@ export class QuizModalPage {
     console.log('ionViewDidLoad QuizModalPage');
   }
 
+  /*
   public update() {
     this.scoreRangeArr = [];
     let temp = Number(this.structure.upper);
@@ -95,6 +99,7 @@ export class QuizModalPage {
     let data = this.scoreSelect;
     this.viewCtrl.dismiss(data);
   }
+  */
 
   public closeModal(){
     this.viewCtrl.dismiss('close');
@@ -104,7 +109,7 @@ export class QuizModalPage {
   // ON Click Scan
   /////////////////////////////////////////////////////////////////////
   public onClickScan(){
-    if(this.scoreSelect == undefined || this.scoreSelect == null ){
+    if(this.scoreSelect == undefined || this.scoreSelect == null || this.scoreSelect == 0 ){
       this.alertErrorScore();
     }else if(this.scoreSelect <= 0){
       this.alertErrorMinusScore();
@@ -117,10 +122,12 @@ export class QuizModalPage {
         this.createNewQuiz();
       }else if(this.status == '1'){
         console.log('toRepeat'+this.quiz_id);
-        this.scanQR(this.quiz_id);
+        //this.scanQR(this.quiz_id);
+        this.pushToScanPage(this.quiz_id);
       }
     }
   }
+  
 
   /////////////////////////////////////////////////////////////////////
   // Alert
@@ -149,6 +156,8 @@ export class QuizModalPage {
     });
     alert.present();
   }
+
+  /*
   confirmUpdateScore(id, barcodeDataText, countScan) {
     let alert = this.alertCtrl.create({
       title: 'มีคะแนน Quiz ของ '+ barcodeDataText +' แล้ว',
@@ -159,7 +168,8 @@ export class QuizModalPage {
           role: 'cancel',
           handler: () => {
             console.log('Cancel clicked');
-            this.scanQR(id);
+            //this.scanQR(id);
+            this.pushToScanPage(id);
           }
         },
         {
@@ -167,7 +177,8 @@ export class QuizModalPage {
           handler: () => {
             console.log('Buy clicked');
             this.updateQuiz(id, barcodeDataText, countScan-1);
-            this.scanQR(id);
+            //this.scanQR(id);
+            this.pushToScanPage(id);
           }
         }
       ]
@@ -182,7 +193,8 @@ export class QuizModalPage {
       buttons: [{
         text: 'OK',
         handler: () => {
-          this.scanQR(id);
+          //this.scanQR(id);
+          this.pushToScanPage(id);
         }}
       ]
     });
@@ -217,6 +229,7 @@ export class QuizModalPage {
     });
     prompt.present();
   }
+  */
 
   /////////////////////////////////////////////////////////////////////
   // Set Default 
@@ -240,8 +253,11 @@ export class QuizModalPage {
     }
  
     // then Scan
-    this.scanQR(dateId);
+    //this.scanQR(dateId);
+    this.pushToScanPage(dateId);
   }
+  
+  /*
 
   updateQuiz(id, barcodeDataText, countScan){
     let scoreNo = Number(this.scoreSelect);
@@ -263,6 +279,9 @@ export class QuizModalPage {
         id : barcodeDataText,
     });
   }
+  */
+
+  /*
 
   checkStudentClass(barcodeDataText,id){
     for(var i=0 ; i<this.studentList.length ; i++){
@@ -280,6 +299,9 @@ export class QuizModalPage {
     }
     return this.studentFlag;
   }
+  */
+
+  /*
 
   checkQuiz(barcodeDataText, id){
     let countScan;
@@ -293,21 +315,44 @@ export class QuizModalPage {
           }else{
             console.log('scan');
             this.updateQuiz(id, barcodeDataText, countScan);
-            this.scanQR(id);
+            //this.scanQR(id);
+            this.pushToScanPage(id);
           }
         }else{
           console.log('scan');
           this.updateQuiz(id,barcodeDataText, countScan);
-          this.scanQR(id);
+          //this.scanQR(id);
+          this.pushToScanPage(id);
         }
       }
     }
   }
+  */
 
 
   /////////////////////////////////////////////////////////////////////
   // Scan
   /////////////////////////////////////////////////////////////////////
+  pushToScanPage(id){
+    let dataList = 
+      { key : 'set',
+        quiz_id : id,
+        totalScore : this.totalScore,
+        scoreSelect : this.scoreSelect
+      }
+    let scan = this.modalCtrl.create(ScanQuizPage, 
+      { 
+        activity : this.activity,
+        course_id : this.course_id,
+        dataList : dataList,
+    });
+    scan.onDidDismiss(data => {
+      this.closeModal();
+    });
+    scan.present();
+  }
+  /*
+
   public scanOption = {
     showTorchButton : true,
     prompt : "ให้ตำแหน่งของ barcode อยู่ภายในพื้นที่ scan",
@@ -315,6 +360,9 @@ export class QuizModalPage {
     resultDisplayDuration : 1500
   };
 
+  */
+
+  /*
   public scanQR(id) {
 
     this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
@@ -336,7 +384,7 @@ export class QuizModalPage {
         }).then(() => {
           this.navCtrl.pop();
         })
-        */
+        
         return false;
       }
       
@@ -346,6 +394,7 @@ export class QuizModalPage {
         console.log(err);
     });
   }
+  */
 
 
   ///////////////////////

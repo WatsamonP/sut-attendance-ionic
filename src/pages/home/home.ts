@@ -39,7 +39,7 @@ export class HomePage {
       });
   }
 
-  selectedCourse(cid : string, cname : string,index){
+  selectedCourse(cid : string, cname : string, index){
     this.navCtrl.push(AttendancePage, {
       course_id: cid,
       course_name: cname,
@@ -47,65 +47,9 @@ export class HomePage {
       pic : index
     });
   }
-  /*
-  selectGroup(cid,cname,img,activity){
-    this.groupList = [];
-    let group;
-    for(var i=0; i<this.courseList.length; i++){
-      if(this.courseList[i].id == cid ){
-        this.groupList = Object.keys(this.courseList[i].group)
-          .map(key => Object.assign({ key }, this.courseList[i].group[key]));
-      }
-    }
 
-    let alert = this.alertCtrl.create();
-    alert.setTitle('เลือกรายการที่ต้องการ');
-    if(activity == 'option'){
-      if(this.groupList.length == 1){
-        this.showRadio(cid,cname,this.groupList[0],img);
-        return false;
-      }else{
-        for(var i=0 ; i<this.groupList.length ; i++){
-          alert.addInput({ type: 'radio', label: this.groupList[i].name, value: this.groupList[i], checked: false });
-        }
-        alert.addInput({ type: 'radio', label: 'Change Color', value: 'color',checked: false });
-      }
-    }else if(activity == 'attendance'){
-      if(this.groupList.length == 1){
-        this.gotoAttendance(cid,cname,this.groupList[0]);
-        return false;
-      }else{
-        for(var i=0 ; i<this.groupList.length ; i++){
-          alert.addInput({ type: 'radio', label: this.groupList[i].name, value: this.groupList[i], checked: false });
-        }
-      }
-    }
-    
-    alert.addButton('Cancel');
-    alert.addButton({
-      text: 'OK',
-      handler: data => {
-        if(data == 'color'){
-          this.colorAlert(cid, img);
-        }
-        if(activity == 'option'){
-          if(this.groupList.length != 1){
-            this.showRadio(cid,cname,data,img);
-          }
-        }else if(activity == 'attendance'){
-          if(this.groupList.length != 1){
-            this.gotoAttendance(cid,cname,data);
-          }
-        }
-        
-      }
-    });
-    alert.present();
-  }
-  */
-
-  showRadio(cid : string, cname : string,group : any, img: String, index) {
-    console.log(group);
+  showRadio(cid : string, cname : string,img: String, index) {
+    console.log(index);
     let alert = this.alertCtrl.create();
     alert.setTitle('เลือกรายการที่ต้องการ');
     alert.addInput({

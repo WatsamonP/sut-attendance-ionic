@@ -20,6 +20,7 @@ export class QuizModalPersonPage {
   scoreRangeArr : any = [];
   structure = {lower: 0, upper: 0};
   totalScore : Number;
+  quizDataList : any;
 
   constructor(
     public navCtrl: NavController, 
@@ -29,13 +30,16 @@ export class QuizModalPersonPage {
     private db: AngularFireDatabase,
     public alertCtrl: AlertController) {
 
-      this.course_id = navParams.get('course_id');
-      this.quiz_id = navParams.get('quiz_id');
-      this.barcodeData = navParams.get('barcodeData');
-      this.countScan = navParams.get('countScan');
-      this.activity = navParams.get('activity');
-      this.totalScore = navParams.get('totalScore');
+      this.quizDataList = navParams.get('quizDataList');
+      this.course_id = this.quizDataList.course_id;
+      this.quiz_id = this.quizDataList.quiz_id;
+      this.barcodeData = this.quizDataList.barcodeData;
+      this.countScan = this.quizDataList.countScan;
+      this.activity = this.quizDataList.activity;
+      this.totalScore = this.quizDataList.totalScore;
       this.structure = {lower: 1, upper: 10};
+      console.log(this.totalScore);
+      console.log(this.quizDataList);
 
       let temp = Number(this.structure.upper);
       for(var i=Number(this.structure.upper) ; i>=Number(this.structure.lower) ; i--){
@@ -66,7 +70,8 @@ export class QuizModalPersonPage {
   // ON Click Save
   /////////////////////////////////////////////////////////////////////
   public onClickSave(){
-    if(this.scoreSelect == undefined || this.scoreSelect == null ){
+    let score = Number(this.scoreSelect);
+    if(this.scoreSelect == undefined || this.scoreSelect == null || this.scoreSelect == 0 ){
       this.alertErrorScore();
     }else if(this.scoreSelect < 0){
       this.alertErrorMinusScore();

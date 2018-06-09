@@ -16,21 +16,18 @@
           <ion-thumbnail item-start>
             <img src="{{'assets/imgs/logoApp.png'}}">
           </ion-thumbnail>
-          <div>
+          <div item-content>
             <h2 ion-text><b>{{course_id}}</b></h2>
             <p ion-text color="dark">{{course_name}}</p>
             <p ion-text color="dark"ion-text>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
           </div>
         </ion-row>
         <ion-row><hr >
-          <button ion-button color="primary" small block (click)="onClick_Create()">
+          <button ion-button  block (click)="onClick_Create()">
             <div>CREATE NEW ATTENDANCE</div>
           </button>          
         </ion-row>
       </ion-item>
-
-
-
       
     <ion-item style="padding: 5%">
       <div item-content ion-text text-right style="font-size: 14px">

@@ -10,6 +10,7 @@ import { Course } from '../../services/course.model';
 import moment from 'moment';
 import { QuizModalPage } from './quiz-modal/quiz-modal';
 import { QuizModalPersonPage } from './quiz-modal-person/quiz-modal-person';
+import { ScanQuizPage } from './scan-quiz/scan-quiz';
 
 @IonicPage()
 @Component({
@@ -21,6 +22,7 @@ export class QuizPage {
   course_id : string;
   course_name : string;
   activity : {id: '',name: ''};
+  pic : any;
   //Model & List
   studentList: Student[];
   courseList : Course[];
@@ -28,10 +30,10 @@ export class QuizPage {
   studentDataList : any;
   // Val
   studentCount : any;
-  testData : String;
   isToggled: boolean = false;
   studentFlag: boolean = false;
   totalScore : Number;
+  dataList : any;
 
   constructor(
     public navCtrl: NavController, 
@@ -47,6 +49,7 @@ export class QuizPage {
     this.course_id = navParams.get('course_id');
     this.course_name = navParams.get('course_name');
     this.activity = navParams.get('activity');
+    this.pic = navParams.get('pic');
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
     this.isToggled = false;
@@ -90,14 +93,236 @@ export class QuizPage {
   // ON MOUSE CLICK
   /////////////////////////////////////////////////////////////////////
   // FOR CREATE NEW
-  public onClickCreateScanOption0(){  // Score -> Scan
-    this.totalScoreSet('0');
+  public onClick_CreateScanSet(){  // Score -> Scan
+    this.setTotalScore('set');
   }
 
 
-  public onClickCreateScanOption1(){  // Scan -> Score
-    this.totalScoreSet('1');
+  public onClick_CreateScanPerson(){  // Scan -> Score
+    this.setTotalScore('person');
   }
+
+  onClick_ScanUpdateSet(id,totalScore){
+    let quizModal = this.modalCtrl.create(QuizModalPage, { 
+      status : '1',
+      course_id: this.course_id,
+      course_name: this.course_name,
+      quiz_id: id,
+      activity : this.activity,
+      totalScore: totalScore
+    });
+    quizModal.present();
+ 
+  }
+
+  onClick_ScanUpdatePerson(id,totalScore){
+    this.dataList = {totalScore:totalScore, quiz_id:id, key:'person'};
+    /*
+    let quizModal = this.modalCtrl.create(QuizModalPage, { 
+      status : '1',
+      course_id: this.course_id,
+      activity : this.activity,
+      totalScore: this.totalScore
+    });
+    quizModal.present();
+    */
+   this.pushToScanPage(this.dataList);
+  }
+
+  public onClick_ScanRepeat(id, item){
+    console.log(item.totalScore);
+    let alert = this.alertCtrl.create();
+    alert.setTitle('Scan Option');
+    alert.addInput({ type: 'radio',label: 'สแกนเป็นชุด',value: '0',checked: false});
+    alert.addInput({ type: 'radio',label: 'สแกนรายบุคคล',value: '1',checked: true});
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'OK',
+      handler: data => {
+        if(data == '0'){
+          this.onClick_ScanUpdateSet(id,item.totalScore);
+        }else if(data == '1'){
+          this.onClick_ScanUpdatePerson(id,item.totalScore);
+        }
+      }
+    });
+    alert.present();
+  }
+
+  public onClick_Delete(id){
+    let confirm = this.alertCtrl.create({
+      title: 'DELETE',
+      message: 'ต้องการลบรายการ ? <br>เมื่อลบแล้วจะไม่สามารถกู้คืนได้',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'OK',
+          handler: () => {
+            console.log('OK clicked');
+            this.deleteQuiz(id);
+          }
+        }
+      ]
+    });
+    confirm.present();
+  }
+  deleteQuiz(id : String){
+    let path = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`;
+    this.db.object(path).remove();
+    
+    for(var i=0 ; i<this.studentList.length ; i++){
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${id}`)
+        .remove();
+    } 
+  }
+
+  public onClick_Setting(id, item){
+    let prompt = this.alertCtrl.create({
+      title: 'จัดการคะแนน',
+      message: "กำหนดคะแนนเต็มสำหรับ "+this.activity.name+" นี้<br>หากไม่กำหนดระบบจำกำหนดอัตโนมัติ 10 คะแนน",
+      inputs: [
+        {
+          name: 'totalScore',
+          type : 'number',
+          value : item.totalScore,
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            if(data.totalScore == undefined || data.totalScore == 0 || data.totalScore == null){
+              data.totalScore = 10;
+            }
+            this.saveSetting(id,data.totalScore);
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+  saveSetting(id, totalScore){
+    this.totalScore = Number(totalScore);
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
+        .update({
+          totalScore : this.totalScore,
+      });
+  }
+
+  pushToScanPage(dataList){
+    let scan = this.modalCtrl.create(ScanQuizPage, 
+      { 
+        activity : this.activity,
+        course_id : this.course_id,
+        dataList : dataList,
+    });
+
+    scan.onDidDismiss(data => {
+      console.log(data);
+    });
+    scan.present();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  setTotalScore(state) {
+    let prompt = this.alertCtrl.create({
+      title: 'จัดการคะแนน',
+      message: "กำหนดคะแนนเต็มสำหรับ "+this.activity.name+" นี้<br>ค่าเริ่มต้น 10 คะแนน",
+      inputs: [{name: 'totalScore', type : 'number', value : ''}],
+      buttons: [
+        { text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            if(data.totalScore == 0){
+              this.totalScore = 10
+            }else{
+              this.totalScore = data.totalScore;
+            }
+            if(state == 'set'){
+              let quizModal = this.modalCtrl.create(QuizModalPage, { 
+                status : '0',
+                course_id: this.course_id,
+                activity : this.activity,
+                totalScore: this.totalScore
+              });
+              quizModal.present();
+            }else if(state == 'person'){
+              this.doCreateScanPerson();
+            }else{
+              console.log('error');
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  // Set Default For Scan Person - สแกน+คะแนน รายบุคคล
+  /////////////////////////////////////////////////////////////////////
+  doCreateScanPerson(){
+    let totalScore = Number(this.totalScore);
+    let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
+    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
+        .update({
+          id : dateId,
+          date : Date(),                                                         
+          count : 0,
+          totalScore : totalScore
+      });
+    // Set 0 Score
+    for(var i=0 ; i<this.studentList.length ; i++){
+      this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${this.studentList[i].id}/${this.activity.id}/${dateId}`)
+        .update({
+          score : 0,
+      });
+    }
+    
+    this.dataList = {totalScore:totalScore, quiz_id:dateId, key:'person'};
+    this.pushToScanPage(this.dataList)
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
   /////////////////////////////////////////////////////////////////////
   // FOR UPDATE
   public onClickScanQuiz(id, item){ //toUpdate
@@ -292,7 +517,6 @@ export class QuizPage {
   crateScanOption1(){
     let totalScore = Number(this.totalScore);
     let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
-    this.testData = dateId;
     this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
         .update({
           id : dateId,
@@ -414,4 +638,5 @@ export class QuizPage {
         .remove();
     } 
   }
+  */
 }

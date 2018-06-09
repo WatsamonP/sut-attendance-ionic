@@ -7,45 +7,44 @@
 </ion-header>
   
   <ion-content class="bg">
-    <ion-card>
-      <ion-item text-wrap>
+    <ion-item [ngStyle]="{
+      'background': 'linear-gradient(0deg, rgba(255, 255, 255, 0.7), 
+                    rgba(255, 255, 255, 0.7)), 
+                    url(assets/imgs/course/'+this.pic+'.png) center center / cover no-repeat'}">
+      <ion-row>
         <ion-thumbnail item-start>
-        <img src="{{'assets/imgs/logoApp.png'}}">
+          <img src="{{'assets/imgs/logoApp.png'}}">
         </ion-thumbnail>
-        <h2>{{course_id}}</h2>
-        <p>{{course_name}}</p>
-      </ion-item>
-        <ion-card-content >
-          <ion-row>
-            <ion-col>
-              <button ion-button color="b-create" small block (click)="onClickCreateScanOption0()">
-                <div>สแกนเป็นชุด</div>
-              </button>
-            </ion-col>
-            <ion-col>
-              <button ion-button color="b-create" small block (click)="onClickCreateScanOption1()">
-                <div>สแกนรายบุคคล</div>
-              </button>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-      </ion-card>
+        <div item-content>
+          <h2 ion-text><b>{{course_id}}</b></h2>
+          <p ion-text color="dark">{{course_name}}</p>
+          <p ion-text color="dark"ion-text>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
+        </div>
+      </ion-row>
+      <ion-row><hr >
+        <ion-col>
+          <button ion-button block (click)="onClick_CreateScanSet()">
+            <div>สแกนเป็นชุด</div>
+          </button>
+        </ion-col>
+        <ion-col>
+           <button ion-button block (click)="onClick_CreateScanPerson()">
+            <div>สแกนรายบุคคล</div>
+          </button>
+        </ion-col>        
+      </ion-row>
+    </ion-item>  
+
+    <ion-item style="padding: 5%">
+      <div item-content ion-text text-right style="font-size: 14px">
+        <b>{{activity.name}}</b>
+      </div>
+      <div item-end ion-text text-right style="font-size: 12px">
+        ASC/DESC<br><ion-toggle [(ngModel)]="isToggled"></ion-toggle>
+      </div>
+    </ion-item>
       
       <ion-list>
-        <div style="padding-left: 5%;" ion-text color="gray">
-          <ion-grid>
-            <ion-row>
-              <ion-col style="text-align: left">
-                <div style="padding-top: 15px"><b>{{activity.name}}</b></div>
-              </ion-col>
-              <ion-col></ion-col>
-              <ion-col col-3 style="text-align: right">
-                <ion-toggle [(ngModel)]="isToggled"></ion-toggle>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </div>
-
         <div *ngIf="isToggled==true">
           <!--ion-item-sliding *ngFor="let item of scheduleQuizList | orderBy:'FIELD_TO_SORT_BY':true ; let odd = odd; let i = index"-->
           <ion-item-sliding *ngFor="let item of scheduleQuizList.slice().reverse() ; let odd = odd; let i = index">
@@ -78,16 +77,20 @@
 
             </ion-item>
             <ion-item-options side="right">
-              <button ion-button color="secondary" (click)="onClickScanQuiz(item.id, item)">
+              <button ion-button color="secondary" (click)="onClick_ScanRepeat(item.id, item)">
                 <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
                 SCAN
               </button>
             </ion-item-options>
               
             <ion-item-options side="left">
-              <button ion-button color="danger" (click)="onClickDelete(item.id)">
+              <button ion-button color="danger" (click)="onClick_Delete(item.id)">
                 <ion-icon name="trash" style="font-size: 25px"></ion-icon>
                 Delete
+              </button>
+              <button ion-button color="gray" (click)="onClick_Setting(item.id, item)">
+                <ion-icon name="settings" style="font-size: 25px"></ion-icon>
+                Setting
               </button>
             </ion-item-options>
           </ion-item-sliding>
@@ -124,18 +127,18 @@
 
             </ion-item>
             <ion-item-options side="right">
-              <button ion-button color="secondary" (click)="onClickScanQuiz(item.id, item)">
+              <button ion-button color="secondary" (click)="onClick_ScanRepeat(item.id, item)">
                 <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
                 SCAN
               </button>
             </ion-item-options>
               
             <ion-item-options side="left">
-              <button ion-button color="danger" (click)="onClickDelete(item.id)">
+              <button ion-button color="danger" (click)="onClick_Delete(item.id)">
                 <ion-icon name="trash" style="font-size: 25px"></ion-icon>
                 Delete
               </button>
-              <button ion-button color="gray" (click)="onClickSetting(item.id, item)">
+              <button ion-button color="gray" (click)="onClick_Setting(item.id, item)">
                 <ion-icon name="settings" style="font-size: 25px"></ion-icon>
                 Setting
               </button>
