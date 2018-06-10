@@ -107,7 +107,7 @@ export class ScanModalPage {
         let stdFlag = this.checkStudentClass(barcodeData.text,id);
         if(stdFlag){
           this.checkAttendance(barcodeData.text,id);
-          this.scanAttendance(id);
+          //this.scanAttendance(id);
         }else{
           this.errorStudentFlag(id);
         }
@@ -203,11 +203,11 @@ export class ScanModalPage {
     });
     /////////////////////////////////
     
-    if(this.attendance_status=='Leave'){
+    if(this.leaveActivity == 'string'){
+      //this.scanAttendance(id);
       console.log('success create leave student');
     }else{
-      //this.scanQR(id); 
-      //this.pushToScanPage(id);
+      this.scanAttendance(id);
     }
     
   }
@@ -295,7 +295,7 @@ export class ScanModalPage {
             }else{
               this.attendance_status = 'Leave';
               //this.scanQR(id);
-              //this.pushToScanPage(id);
+              this.scanAttendance(id);
             }
           }
         }
@@ -365,7 +365,7 @@ export class ScanModalPage {
         text: 'OK',
         handler: () => {
           //this.scanQR(id);
-          //this.pushToScanPage(id);
+          this.scanAttendance(id);
         }}
       ]
     });
