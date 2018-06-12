@@ -30,24 +30,25 @@ export class ManageAttendancePage {
     public alertCtrl: AlertController,
     private attendance: AttendanceService) {
 
-     this.lateTime = moment().format();
-     this.course_id = navParams.get('course_id');
-     this.scheduleAttendanceList = navParams.get('scheduleAttendanceList');
-     this.studentList = navParams.get('studentList');
-     this.lateIndex = navParams.get('lateIndex');
-     this.lateItem = navParams.get('lateItem');
+      let today = moment().add(10, 'minutes');
+      this.lateTime = moment(today).format();
+      this.course_id = navParams.get('course_id');
+      this.scheduleAttendanceList = navParams.get('scheduleAttendanceList');
+      this.studentList = navParams.get('studentList');
+      this.lateIndex = navParams.get('lateIndex');
+      this.lateItem = navParams.get('lateItem');
 
-     if(this.lateIndex != undefined && this.lateItem != undefined){
-       this.lateTime = this.lateItem.lateTime;
-       this.lateScore = this.lateItem.lateScore;
-       this.onTimeScore = this.lateItem.onTimeScore;
-       this.leaveScore = this.lateItem.leaveScore;
-       this.settingFlag = true;
-       this.createFlag = false;
-     }else{
-       this.createFlag = true;
-       this.settingFlag = false;
-     }
+      if(this.lateIndex != undefined && this.lateItem != undefined){
+        this.lateTime = this.lateItem.lateTime;
+        this.lateScore = this.lateItem.lateScore;
+        this.onTimeScore = this.lateItem.onTimeScore;
+        this.leaveScore = this.lateItem.leaveScore;
+        this.settingFlag = true;
+        this.createFlag = false;
+      }else{
+        this.createFlag = true;
+        this.settingFlag = false;
+       }
      
   }
 
@@ -60,10 +61,10 @@ export class ManageAttendancePage {
   }
 
   public onClick_SaveAttendanceSetting(){
-    let d1 = new Date(this.lateTime), d2 = new Date(d1);
-    d2.setMinutes ( d1.getMinutes() + 10 );
-    this.lateTime = d2;
-    console.log(this.lateTime);
+    //let d1 = new Date(this.lateTime), d2 = new Date(d1);
+    //d2.setMinutes ( d1.getMinutes() + 10 );
+    //this.lateTime = d2;
+    //console.log(this.lateTime);
  
     if(this.lateScore == undefined){
       this.lateScore = '0.5';
