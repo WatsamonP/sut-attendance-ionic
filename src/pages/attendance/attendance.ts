@@ -85,6 +85,7 @@ export class AttendancePage {
     this.isToggled = false;
     this.attendance_status = '';
     this.leaveActivity = 'none';
+    this.scanRepeatActivity = '';
     this.attendanceData = {};
 
     //Query scheduleAttendanceList
