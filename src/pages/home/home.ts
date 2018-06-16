@@ -19,7 +19,7 @@ export class HomePage {
   btnName: any = 'EDIT';
   flag: any = false;
   activity : {id: '',name: ''};
-  groupList : any;
+  groupNo : any;
 
   constructor(
     public navCtrl: NavController,
@@ -39,16 +39,17 @@ export class HomePage {
       });
   }
 
-  selectedCourse(cid : string, cname : string, index){
+  selectedCourse(cid : string, cname : string, index, groupCount){
     this.navCtrl.push(AttendancePage, {
       course_id: cid,
       course_name: cname,
       activity : {id: 'attendance', name: 'ATTENDANCE'},
-      pic : index
+      pic : index,
+      groupCount : groupCount 
     });
   }
 
-  showRadio(cid : string, cname : string,img: String, index) {
+  showRadio(cid : string, cname : string,img: String, index, groupCount) {
     console.log(index);
     let alert = this.alertCtrl.create();
     alert.setTitle('เลือกรายการที่ต้องการ');
@@ -74,28 +75,32 @@ export class HomePage {
             course_id: cid,
             course_name: cname,
             activity : {id: 'attendance', name: 'ATTENDANCE'},
-            pic : index
+            pic : index,
+            groupCount : groupCount
           });
         }else if(data == 'quiz'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
             activity : {id: 'quiz', name: 'QUIZ'},
-            pic : index
+            pic : index,
+            groupCount : groupCount
           });
         }else if(data == 'hw'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
             activity : {id: 'hw', name: 'HOMEWORK'},
-            pic : index
+            pic : index,
+            groupCount : groupCount
           });
         }else if(data == 'lab'){
           this.navCtrl.push(QuizPage, {
             course_id: cid,
             course_name: cname,
             activity : {id: 'lab', name: 'LAB'},
-            pic : index
+            pic : index,
+            groupCount : groupCount
           });
         }
       }

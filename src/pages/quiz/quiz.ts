@@ -129,12 +129,18 @@ export class QuizPage {
    this.pushToScanPage(this.dataList);
   }
 
+  onClick_StringUpdatePerson(id,totalScore){
+    this.dataList = {totalScore:totalScore, quiz_id:id, key:'stringPerson'};
+    this.pushToScanPage(this.dataList);
+  }
+
   public onClick_ScanRepeat(id, item){
     console.log(item.totalScore);
     let alert = this.alertCtrl.create();
     alert.setTitle('Scan Option');
     alert.addInput({ type: 'radio',label: 'สแกนเป็นชุด',value: '0',checked: false});
-    alert.addInput({ type: 'radio',label: 'สแกนรายบุคคล',value: '1',checked: true});
+    alert.addInput({ type: 'radio',label: 'สแกนรายบุคคล',value: '1',checked: false});
+    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา',value: '2',checked: false});
     alert.addButton('Cancel');
     alert.addButton({
       text: 'OK',
@@ -143,6 +149,8 @@ export class QuizPage {
           this.onClick_ScanUpdateSet(id,item.totalScore);
         }else if(data == '1'){
           this.onClick_ScanUpdatePerson(id,item.totalScore);
+        }else if(data == '2'){
+          this.onClick_StringUpdatePerson(id,item.totalScore);
         }
       }
     });

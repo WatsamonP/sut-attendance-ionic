@@ -28,6 +28,7 @@ export class ScanModalPage {
   onTimeScore : any;
   leaveScore : any;
   leaveActivity : any;
+  scanRepeatActivity: any;
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -43,6 +44,7 @@ export class ScanModalPage {
       //this.attendance_status = navParams.get('attendance_status');
       this.attendanceData = navParams.get('attendanceData');
       this.leaveActivity = navParams.get('leaveActivity');
+      this.scanRepeatActivity = navParams.get('scanRepeatActivity');
       this.lateTime = this.attendanceData.lateTime;
       this.lateScore = this.attendanceData.lateScore;
       this.onTimeScore = this.attendanceData.onTimeScore;
@@ -77,11 +79,12 @@ export class ScanModalPage {
           this.doCreateLeaveString(this.attendanceData.id);
         }
       }else{
-        this.scanAttendance(this.attendanceData.id)
+        if(this.scanRepeatActivity == 'scan'){
+          this.scanAttendance(this.attendanceData.id)
+        }else if(this.scanRepeatActivity == 'string'){
+          this.doCreateRepeatString(this.attendanceData.id);
+        }
       }
-
-      
-      //this.calculateTime();
   }
 
   ionViewDidLoad() {
@@ -203,7 +206,7 @@ export class ScanModalPage {
     });
     /////////////////////////////////
     
-    if(this.leaveActivity == 'string'){
+    if(this.leaveActivity == 'string' || this.scanRepeatActivity == 'string'){
       //this.scanAttendance(id);
       console.log('success create leave student');
     }else{
@@ -228,8 +231,8 @@ export class ScanModalPage {
 
   doCreateLeaveString(id) {
     let prompt = this.alertCtrl.create({
-      title: 'กำหนดคะแนน',
-      message: "ป้อนคะแนนสำหรับนักศึกษาที่ป่วยหรือลา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
+      title: 'ป้อนรหัสนักศึกษา',
+      message: "คะแนนสำหรับนักศึกษาที่ป่วยหรือลา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
       inputs: [
         {
           name: 'stdId',
@@ -241,6 +244,7 @@ export class ScanModalPage {
         {
           text: 'Cancel',
           handler: data => {
+            this.closeModal();
             console.log('Cancel clicked');
           }
         },
@@ -281,6 +285,7 @@ export class ScanModalPage {
         {
           text: 'Cancel',
           handler: data => {
+            this.closeModal();
             console.log('Cancel clicked');
           }
         },
@@ -296,6 +301,46 @@ export class ScanModalPage {
               this.attendance_status = 'Leave';
               //this.scanQR(id);
               this.scanAttendance(id);
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+  doCreateRepeatString(id) {
+    let prompt = this.alertCtrl.create({
+      title: 'ป้อนรหัสนักศึกษา',
+      message: "คะแนนสำหรับนักศึกษา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
+      inputs: [
+        {
+          name: 'stdId',
+          placeholder: 'รหัสนักศึกษา',
+          type : 'text',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            this.closeModal();
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            if(Number(this.leaveScore) > Number(this.onTimeScore)){
+              this.errorScoreAlertLeave();
+            }else{
+              let stdFlag = this.checkStudentClass(data.stdId,id);
+              if(stdFlag){
+                this.checkAttendance(data.stdId,id); 
+                this.closeModal();
+              }else{
+                this.errorStudentFlag(id);
+              }
             }
           }
         }

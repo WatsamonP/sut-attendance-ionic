@@ -52,7 +52,13 @@ export class AttendancePage {
   public loading: boolean;
   attendanceData : any;
   leaveActivity : String;
- 
+  scanRepeatActivity: String;
+  isCheckGroupCount: boolean = false;
+  groupCount : any;
+  items: any = [];
+  itemExpandHeight: number = 100;
+  groupList : any;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -67,12 +73,12 @@ export class AttendancePage {
     public modalCtrl: ModalController,
     private attendance: AttendanceService) {
 
-      
-    
       this.course_id = navParams.get('course_id');
       this.course_name = navParams.get('course_name');
       this.activity = navParams.get('activity');
       this.pic = navParams.get('pic');
+      this.groupCount = navParams.get('groupCount');
+      console.log(this.groupCount);
 
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/attendance`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
@@ -86,6 +92,7 @@ export class AttendancePage {
       return actions.map(action => ({ key: action.key, ...action.payload.val() }));
       }).subscribe(items => {
         this.scheduleAttendanceList = items;
+        this.items = this.scheduleAttendanceList;
         return items.map(item => item.key);
       });
 
@@ -110,6 +117,51 @@ export class AttendancePage {
   ionViewWillLeave() {
     this.menu.swipeEnable(true);
    }
+
+   expandItem(item){
+    this.groupList = [];
+    let temp;
+    let countLeave = 0;
+    let countLate = 0;
+    let countOnTime = 0;
+    let countMissed = 0;
+    console.log(this.groupCount)
+    for(var i=1; i<=this.groupCount ;i++){
+      countLeave = 0;countLate = 0;countOnTime = 0;countMissed = 0;
+      for(var j=0; j<this.studentList.length ;j++){
+        if(this.studentList[j].group == i){
+          //console.log(this.studentList[i].attendance[id].status);
+          temp = this.studentList[j].attendance[item.id].status
+          if(temp == 'Leave'){
+            countLeave++;
+          }else if(temp == 'Late'){
+            countLate++;
+          }else if(temp == 'onTime'){
+            countOnTime++;
+          }else if(temp == 'Missed Class'){
+            countMissed++;
+          }
+        }
+      }
+      this.groupList.push({gid:i,countLeave:countLeave,countLate:countLate,countOnTime:countOnTime,countMissed:countMissed});
+      console.log('G',i,' Leave',countLeave);
+      console.log('G',i,' Late',countLate);
+      console.log('G',i,' onTime',countOnTime);
+      console.log('G',i,' Missed',countMissed);
+    }
+    console.log(this.groupList);
+
+    this.scheduleAttendanceList.map((listItem) => {
+        if(item == listItem){
+            listItem.expanded = !listItem.expanded;
+        } else {
+            listItem.expanded = false;
+        }
+        return listItem;
+    });
+  }
+
+   //////////////////////////////////////////////
    
   pushToScanPage(data){
     let scan = this.modalCtrl.create(ScanModalPage, 
@@ -117,7 +169,8 @@ export class AttendancePage {
         activity : this.activity,
         course_id : this.course_id,
         attendanceData : data,
-        leaveActivity : this.leaveActivity
+        leaveActivity : this.leaveActivity,
+        scanRepeatActivity : this.scanRepeatActivity
     });
 
     scan.onDidDismiss(data => {
@@ -155,35 +208,52 @@ export class AttendancePage {
   public onClick_UpdateAttendanceLeave(id,item){
     this.attendanceData = item;
     this.attendance_status = 'Leave';
-    let prompt = this.alertCtrl.create({
-      title: 'เลือกรายการ',
-      buttons: [
-        {
-          text: 'สแกน',
-          handler: data => {
-            this.leaveActivity = 'scan';
-            this.pushToScanPage(this.attendanceData);
-          }
-        },
-        {
-          text: 'ป้อนรหัสนักศึกษา',
-          handler: data => {
-            this.leaveActivity = 'string';
-            this.pushToScanPage(this.attendanceData);
-          }
-        },{
-          text: 'Cancel',
-          handler: data => {}
-        },
-      ]
+    let alert = this.alertCtrl.create();
+    alert.setTitle('เลือกรายการ');
+    alert.addInput({ type: 'radio',label: 'สแกน',value: '0',checked: false});
+    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา',value: '1',checked: true});
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'OK',
+      handler: data => {
+        if(data == '0'){
+          this.leaveActivity = 'scan';
+          this.pushToScanPage(this.attendanceData);
+        }else if(data == '1'){
+          this.leaveActivity = 'string';
+          this.pushToScanPage(this.attendanceData);
+        }else{
+          console.log('error');
+        }
+      }
     });
-    prompt.present();
+    alert.present();
   }
 
   public onClick_UpdateAttendance(id,item){
     this.attendanceData = item;
     this.leaveActivity = 'none';
-    this.pushToScanPage(this.attendanceData);
+
+    let alert = this.alertCtrl.create();
+    alert.setTitle('เลือกรายการ');
+    alert.addInput({ type: 'radio',label: 'สแกน',value: '0',checked: false});
+    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา',value: '1',checked: true});
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'OK',
+      handler: data => {
+        if(data == '0'){
+          this.scanRepeatActivity = 'scan';
+          this.pushToScanPage(this.attendanceData);
+        }else if(data == '1'){
+          this.scanRepeatActivity = 'string';
+          this.pushToScanPage(this.attendanceData);
+        }else{
+          console.log('error');
+        }
+      }
+    });
+    alert.present();
   }
 
   public onClick_Delete(id){
@@ -231,6 +301,11 @@ export class AttendancePage {
       console.log('close')
     });
     page.present();
+  }
+
+  public checkGroupCount(course){
+    this.isCheckGroupCount = true;
+    console.log(course);
   }
 
 

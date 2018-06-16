@@ -26,5 +26,13 @@ page-attendance {
   .button-create-new {
     background-color: #fd7c31;
   }
-  
+}
+
+
+.ios, .md {
+  page-home {
+      button {
+          align-items: baseline;
+      }
+  }
 }

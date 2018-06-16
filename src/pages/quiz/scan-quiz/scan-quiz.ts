@@ -85,6 +85,8 @@ export class ScanQuizPage {
         this.scanPerson(this.quiz_id);
       }else if(this.scanKey== 'set'){
         this.scanSet(this.quiz_id);
+      }else if(this.scanKey == 'stringPerson'){
+        this.doCreateRepeatString(this.quiz_id);
       }else{
         console.log('error');
       }
@@ -142,6 +144,42 @@ export class ScanQuizPage {
     },(err) => {
       console.log(err);
     });
+  }
+
+  public doCreateRepeatString(id) {
+    let prompt = this.alertCtrl.create({
+      title: 'ป้อนรหัสนักศึกษา',
+      //message: "คะแนนสำหรับนักศึกษา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
+      inputs: [
+        {
+          name: 'stdId',
+          placeholder: 'รหัสนักศึกษา',
+          type : 'text',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            this.closeModal();
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            let stdFlag = this.checkStudentClass(data.stdId,id);
+            if(stdFlag){
+              this.checkQuizPerson(data.stdId,id); 
+              this.closeModal();
+            }else{
+              this.errorStudentFlag(id);
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
   }
 
   checkStudentClass(barcodeDataText,id){
@@ -240,6 +278,8 @@ export class ScanQuizPage {
             this.scanPerson(id);
           }else if(this.scanKey == 'set'){
             this.scanSet(id)
+          }else if(this.scanKey == 'stringPerson'){
+            this.doCreateRepeatString(id);
           }
         }}
       ]
@@ -261,6 +301,8 @@ export class ScanQuizPage {
               this.scanPerson(id);
             }else if(this.scanKey == 'set'){
               this.scanSet(id)
+            }else if(this.scanKey == 'stringPerson'){
+              this.closeModal();
             }
           }
         },
@@ -274,6 +316,8 @@ export class ScanQuizPage {
             }else if(this.scanKey == 'set'){
               this.updateQuiz(id, barcodeDataText, countScan-1);
               this.scanSet(id);
+            }else if(this.scanKey == 'stringPerson'){
+              this.insertScoreModal(barcodeDataText, id, countScan-1);
             }
           }
         }
@@ -297,7 +341,11 @@ export class ScanQuizPage {
       quizDataList: this.quizDataList 
     });
     profileModal.onDidDismiss(data => {
+      if(this.scanKey == 'stringPerson'){
+        this.closeModal();
+      }else{
         this.scanPerson(quiz_id);
+      }
     });
     profileModal.present();
   }
