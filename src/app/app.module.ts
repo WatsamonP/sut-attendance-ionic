@@ -13,7 +13,6 @@ import { QuizModalPersonPage } from '../pages/quiz/quiz-modal-person/quiz-modal-
 import { ScanModalPage } from '../pages/attendance/scan-modal/scan-modal';
 import { ManageAttendancePage } from '../pages/attendance/manage-attendance/manage-attendance';
 import { ExpandableComponent } from '../components/expandable/expandable'
-import { ComponentsModule } from '../components/components.module'
 
 import { AboutMePage } from '../pages/about-me/about-me';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -47,7 +46,6 @@ import { HttpModule } from '@angular/http';
     ScanModalPage,
     ManageAttendancePage,
     ExpandableComponent,
-    ComponentsModule
   ],
   imports: [
     BrowserModule,
