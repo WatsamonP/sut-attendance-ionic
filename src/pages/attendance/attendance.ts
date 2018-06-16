@@ -85,7 +85,7 @@ export class AttendancePage {
     this.isToggled = false;
     this.attendance_status = '';
     this.leaveActivity = 'none';
-    this.scanRepeatActivity = '';
+    this.scanRepeatActivity = 'none';
     this.attendanceData = {};
 
     //Query scheduleAttendanceList
@@ -200,6 +200,7 @@ export class AttendancePage {
           if(this.scheduleAttendanceList[i].id == data){
             this.attendanceData = this.scheduleAttendanceList[i];
             this.leaveActivity = 'none';
+            this.scanRepeatActivity = 'none';
             this.pushToScanPage(this.attendanceData);
           }
         }

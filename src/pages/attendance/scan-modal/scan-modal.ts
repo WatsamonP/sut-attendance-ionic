@@ -79,11 +79,19 @@ export class ScanModalPage {
           this.doCreateLeaveString(this.attendanceData.id);
         }
       }else{
+        this.scanAttendance(this.attendanceData.id)
+      }
+
+      if(this.scanRepeatActivity != 'none'){
         if(this.scanRepeatActivity == 'scan'){
+          this.attendance_status = 'Leave';
           this.scanAttendance(this.attendanceData.id)
+          //this.doCreateLeaveScan(this.attendanceData.id);
         }else if(this.scanRepeatActivity == 'string'){
-          this.doCreateRepeatString(this.attendanceData.id);
+          this.doCreateLeaveString(this.attendanceData.id);
         }
+      }else{
+        this.scanAttendance(this.attendanceData.id)
       }
   }
 
