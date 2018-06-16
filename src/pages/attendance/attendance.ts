@@ -56,7 +56,7 @@ export class AttendancePage {
   isCheckGroupCount: boolean = false;
   groupCount : any;
   items: any = [];
-  itemExpandHeight: number = 100;
+  itemExpandHeight: number = 135;
   groupList : any;
 
   constructor(
@@ -125,13 +125,15 @@ export class AttendancePage {
     let countLate = 0;
     let countOnTime = 0;
     let countMissed = 0;
+    let all = 0;
     console.log(this.groupCount)
     for(var i=1; i<=this.groupCount ;i++){
-      countLeave = 0;countLate = 0;countOnTime = 0;countMissed = 0;
+      countLeave = 0;countLate = 0;countOnTime = 0;countMissed = 0;all = 0;
       for(var j=0; j<this.studentList.length ;j++){
         if(this.studentList[j].group == i){
           //console.log(this.studentList[i].attendance[id].status);
           temp = this.studentList[j].attendance[item.id].status
+          all++;
           if(temp == 'Leave'){
             countLeave++;
           }else if(temp == 'Late'){
@@ -143,15 +145,16 @@ export class AttendancePage {
           }
         }
       }
-      this.groupList.push({gid:i,countLeave:countLeave,countLate:countLate,countOnTime:countOnTime,countMissed:countMissed});
-      console.log('G',i,' Leave',countLeave);
-      console.log('G',i,' Late',countLate);
-      console.log('G',i,' onTime',countOnTime);
-      console.log('G',i,' Missed',countMissed);
+      this.groupList.push({gid:i,
+        countLeave:countLeave,
+        countLate:countLate,
+        countOnTime:countOnTime,
+        countMissed:countMissed,
+        all:all});
     }
     console.log(this.groupList);
 
-    this.scheduleAttendanceList.map((listItem) => {
+    this.items.map((listItem) => {
         if(item == listItem){
             listItem.expanded = !listItem.expanded;
         } else {
