@@ -56,7 +56,7 @@ export class AttendancePage {
   isCheckGroupCount: boolean = false;
   groupCount : any;
   items: any = [];
-  itemExpandHeight: number = 135;
+  itemExpandHeight: number;
   groupList : any;
 
   constructor(
@@ -87,6 +87,15 @@ export class AttendancePage {
     this.leaveActivity = 'none';
     this.scanRepeatActivity = 'none';
     this.attendanceData = {};
+    this.itemExpandHeight = 70;
+    for(var i=0; i<this.groupCount; i++){
+      if(i > 3){
+        this.itemExpandHeight = this.itemExpandHeight + 40;
+      }else{
+        this.itemExpandHeight = this.itemExpandHeight + 20;
+      }
+    }
+    console.log(this.itemExpandHeight)
 
     //Query scheduleAttendanceList
     this.db.list(coursePath).snapshotChanges().map(actions => {
@@ -241,8 +250,8 @@ export class AttendancePage {
 
     let alert = this.alertCtrl.create();
     alert.setTitle('เลือกรายการ');
-    alert.addInput({ type: 'radio',label: 'สแกน',value: '0',checked: false});
-    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา',value: '1',checked: true});
+    alert.addInput({ type: 'radio',label: 'สแกน',value: '0',checked: true});
+    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา',value: '1',checked: false});
     alert.addButton('Cancel');
     alert.addButton({
       text: 'OK',
