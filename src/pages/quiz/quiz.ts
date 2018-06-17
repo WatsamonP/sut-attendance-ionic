@@ -33,6 +33,9 @@ export class QuizPage {
   studentFlag: boolean = false;
   totalScore : Number;
   dataList : any;
+  groupCount : any;
+  itemExpandHeight: number;
+  groupList : any;
 
   constructor(
     public navCtrl: NavController, 
@@ -49,9 +52,18 @@ export class QuizPage {
     this.course_name = navParams.get('course_name');
     this.activity = navParams.get('activity');
     this.pic = navParams.get('pic');
+    this.groupCount = navParams.get('groupCount');
     const coursePath = `users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}`;
     const studentPath = `users/${this.auth.currentUserId()}/course/${this.course_id}/students`;
     this.isToggled = false;
+    this.itemExpandHeight = 70;
+    for(var i=0; i<this.groupCount; i++){
+      if(i > 3){
+        this.itemExpandHeight = this.itemExpandHeight + 40;
+      }else{
+        this.itemExpandHeight = this.itemExpandHeight + 20;
+      }
+    }
 
     //Query scheduleQuizList
     this.db.list(coursePath).snapshotChanges().map(actions => {
@@ -86,7 +98,51 @@ export class QuizPage {
 
   ionViewWillLeave() {
     this.menu.swipeEnable(true);
-   }
+  }
+
+  public expandItem(item){
+    this.groupList = [];
+    let temp;
+    let all,countZero,countCheck;
+    
+    console.log(this.groupCount)
+    for(var i=1; i<=this.groupCount ;i++){
+      countZero = 0;countCheck = 0;all = 0;
+      for(var j=0; j<this.studentList.length ;j++){
+        if(this.studentList[j].group == i){
+          if(String(this.activity.id) == 'quiz'){
+            temp = this.studentList[j].quiz[item.id].score;
+          }else if(String(this.activity.id) == 'hw'){
+            temp = this.studentList[j].hw[item.id].score;
+          }else if(String(this.activity.id) == 'lab'){
+            temp = this.studentList[j].lab[item.id].score;
+          }
+          all++;
+          console.log();
+          
+          if(Number(temp) == 0){
+            countZero++;
+          }else{
+            countCheck++;
+          }
+        }
+      }
+      this.groupList.push({gid:i,
+        countZero:countZero,
+        countCheck:countCheck,
+        all:all});
+    }
+    console.log(this.groupList);
+
+    this.scheduleQuizList.map((listItem) => {
+        if(item == listItem){
+            listItem.expanded = !listItem.expanded;
+        } else {
+            listItem.expanded = false;
+        }
+        return listItem;
+    });
+  }
    
   /////////////////////////////////////////////////////////////////////
   // ON MOUSE CLICK
@@ -111,7 +167,18 @@ export class QuizPage {
       totalScore: totalScore
     });
     quizModal.present();
- 
+  }
+
+  onClick_StringUpdateSet(id,totalScore){
+    let quizModal = this.modalCtrl.create(QuizModalPage, { 
+      status : '2',
+      course_id: this.course_id,
+      course_name: this.course_name,
+      quiz_id: id,
+      activity : this.activity,
+      totalScore: totalScore
+    });
+    quizModal.present();
   }
 
   onClick_ScanUpdatePerson(id,totalScore){
@@ -136,10 +203,11 @@ export class QuizPage {
   public onClick_ScanRepeat(id, item){
     console.log(item.totalScore);
     let alert = this.alertCtrl.create();
-    alert.setTitle('Scan Option');
+    alert.setTitle('Option');
     alert.addInput({ type: 'radio',label: 'สแกนเป็นชุด',value: '0',checked: false});
     alert.addInput({ type: 'radio',label: 'สแกนรายบุคคล',value: '1',checked: false});
-    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา',value: '2',checked: false});
+    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา(ชุด)',value: '2',checked: false});
+    alert.addInput({ type: 'radio',label: 'ป้อนรหัสนักศึกษา(รายบุคคล)',value: '3',checked: false});
     alert.addButton('Cancel');
     alert.addButton({
       text: 'OK',
@@ -149,6 +217,8 @@ export class QuizPage {
         }else if(data == '1'){
           this.onClick_ScanUpdatePerson(id,item.totalScore);
         }else if(data == '2'){
+          this.onClick_StringUpdateSet(id,item.totalScore);
+        }else if(data == '3'){
           this.onClick_StringUpdatePerson(id,item.totalScore);
         }
       }

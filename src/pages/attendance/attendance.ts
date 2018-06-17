@@ -54,7 +54,6 @@ export class AttendancePage {
   scanRepeatActivity: String;
   isCheckGroupCount: boolean = false;
   groupCount : any;
-  items: any = [];
   itemExpandHeight: number;
   groupList : any;
 
@@ -94,14 +93,12 @@ export class AttendancePage {
         this.itemExpandHeight = this.itemExpandHeight + 20;
       }
     }
-    console.log(this.itemExpandHeight)
 
     //Query scheduleAttendanceList
     this.db.list(coursePath).snapshotChanges().map(actions => {
       return actions.map(action => ({ key: action.key, ...action.payload.val() }));
       }).subscribe(items => {
         this.scheduleAttendanceList = items;
-        this.items = this.scheduleAttendanceList;
         return items.map(item => item.key);
       });
 
@@ -127,14 +124,10 @@ export class AttendancePage {
     this.menu.swipeEnable(true);
    }
 
-   expandItem(item){
+   public expandItem(item){
     this.groupList = [];
     let temp;
-    let countLeave = 0;
-    let countLate = 0;
-    let countOnTime = 0;
-    let countMissed = 0;
-    let all = 0;
+    let countLeave,countLate,countOnTime,countMissed,all = 0;
     console.log(this.groupCount)
     for(var i=1; i<=this.groupCount ;i++){
       countLeave = 0;countLate = 0;countOnTime = 0;countMissed = 0;all = 0;
@@ -163,7 +156,7 @@ export class AttendancePage {
     }
     console.log(this.groupList);
 
-    this.items.map((listItem) => {
+    this.scheduleAttendanceList.map((listItem) => {
         if(item == listItem){
             listItem.expanded = !listItem.expanded;
         } else {

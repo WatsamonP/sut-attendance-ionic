@@ -40,7 +40,6 @@ export class ScanModalPage {
 
       this.activity = navParams.get('activity');
       this.course_id = navParams.get('course_id');
-      //this.attendance_status = navParams.get('attendance_status');
       this.attendanceData = navParams.get('attendanceData');
       this.leaveActivity = navParams.get('leaveActivity');
       this.scanRepeatActivity = navParams.get('scanRepeatActivity');
@@ -69,22 +68,16 @@ export class ScanModalPage {
           return items.map(item => item.key);
       });
 
-      if(this.leaveActivity != 'none'){
-        if(this.leaveActivity == 'scan'){
-          this.attendance_status = 'Leave';
-          this.scanAttendance(this.attendanceData.id)
-          //this.doCreateLeaveScan(this.attendanceData.id);
-        }else if(this.leaveActivity == 'string'){
-          this.doCreateLeaveString(this.attendanceData.id);
-        }
-      }else if(this.scanRepeatActivity != 'none'){
-        if(this.scanRepeatActivity == 'scan'){
-          this.scanAttendance(this.attendanceData.id)
-          //this.doCreateLeaveScan(this.attendanceData.id);
-        }else if(this.scanRepeatActivity == 'string'){
-          this.doCreateLeaveString(this.attendanceData.id);
-        }
-      }else{
+      if(this.leaveActivity == 'scan'){
+        this.attendance_status = 'Leave';
+        this.scanAttendance(this.attendanceData.id)
+      }else if(this.leaveActivity == 'string'){
+        this.doCreateLeaveString(this.attendanceData.id);
+      }else if(this.scanRepeatActivity == 'scan'){
+        this.scanAttendance(this.attendanceData.id)
+      }else if(this.scanRepeatActivity == 'string'){
+        this.doCreateRepeatString(this.attendanceData.id);
+      }else if(this.leaveActivity == 'none' && this.scanRepeatActivity == 'none'){
         this.scanAttendance(this.attendanceData.id)
       }
   }
@@ -144,7 +137,7 @@ export class ScanModalPage {
   }
 
   checkAttendance(barcodeDataText, id){
-    
+
     if(this.attendance_status == 'Leave'){
       this.attendance_score = this.leaveScore;
     }else{
@@ -210,6 +203,9 @@ export class ScanModalPage {
     
     if(this.leaveActivity == 'string'){
       this.doCreateLeaveString(id);
+    }else if(this.leaveActivity == 'scan'){
+      this.attendance_status = 'Leave';
+      this.scanAttendance(id);
     }else if(this.scanRepeatActivity == 'string'){
       this.doCreateRepeatString(id);
     }else{
@@ -232,8 +228,8 @@ export class ScanModalPage {
 
   doCreateLeaveString(id) {
     let prompt = this.alertCtrl.create({
-      title: 'ป้อนรหัสนักศึกษา',
-      message: "คะแนนสำหรับนักศึกษาที่ป่วยหรือลา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
+      title: 'ป้อนรหัสนักศึกษา ที่"ป่วยหรือลา"',
+      message: "สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
       inputs: [
         {
           name: 'stdId',
@@ -271,49 +267,10 @@ export class ScanModalPage {
     prompt.present();
   }
 
-  doCreateLeaveScan(id) {
-    let prompt = this.alertCtrl.create({
-      title: 'กำหนดคะแนน',
-      message: "กำหนดคะแนนสำหรับนักศึกษาที่ป่วยหรือลา<br>ค่าเริ่มต้น 1",
-      inputs: [
-        {
-          name: 'leaveScore',
-          placeholder: 'คะแนน',
-          type: 'number',
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: data => {
-            this.closeModal();
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Save',
-          handler: data => {
-            if(Number(data.leaveScore) == 0){
-              data.leaveScore = 0.5;
-            }
-            if(Number(this.leaveScore) > Number(this.onTimeScore)){
-              this.errorScoreAlertLeave();
-            }else{
-              this.attendance_status = 'Leave';
-              //this.scanQR(id);
-              this.scanAttendance(id);
-            }
-          }
-        }
-      ]
-    });
-    prompt.present();
-  }
-
   doCreateRepeatString(id) {
     let prompt = this.alertCtrl.create({
-      title: 'ป้อนรหัสนักศึกษา',
-      message: "คะแนนสำหรับนักศึกษา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
+      title: 'ป้อนรหัสนักศึกษา ที่"มาเรียน"',
+      message: "สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
       inputs: [
         {
           name: 'stdId',
@@ -361,28 +318,6 @@ export class ScanModalPage {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ////////////////////////////////////////////////
   
   errorStudentFlag(id) {
@@ -394,6 +329,9 @@ export class ScanModalPage {
         handler: () => {
           if(this.leaveActivity == 'string'){
             this.doCreateLeaveString(id);
+          }else if(this.leaveActivity == 'scan'){
+            this.attendance_status = 'Leave';
+            this.scanAttendance(id);
           }else if(this.scanRepeatActivity == 'string'){
             this.doCreateRepeatString(id);
           }else{
@@ -408,12 +346,21 @@ export class ScanModalPage {
   errorDuplicateData(id, barcodeDataText) {
     let alert = this.alertCtrl.create({
       title: 'ERROR !',
-      subTitle: 'รหัส ' + barcodeDataText + ' ถูกสแกนแล้ว ไม่สามารถสแกนซ้ำได้',
+      subTitle: 'รหัส ' + barcodeDataText + ' ถูกบันทึกแล้ว ไม่สามารถบันทึกซ้ำได้',
       buttons: [{
         text: 'OK',
         handler: () => {
-          //this.scanQR(id);
-          this.scanAttendance(id);
+          if(this.leaveActivity == 'string'){
+            this.doCreateLeaveString(id);
+          }else if(this.leaveActivity == 'scan'){
+            this.attendance_status = 'Leave';
+            this.scanAttendance(id);
+          }else if(this.scanRepeatActivity == 'string'){
+            this.doCreateRepeatString(id);
+          }else{
+            this.scanAttendance(id);
+          }
+          //this.scanAttendance(id);
         }}
       ]
     });

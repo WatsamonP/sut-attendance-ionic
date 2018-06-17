@@ -1,0 +1,152 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{activity.name}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+  
+  <ion-content class="bg">
+    <ion-item [ngStyle]="{
+      'background': 'linear-gradient(0deg, rgba(255, 255, 255, 0.7), 
+                    rgba(255, 255, 255, 0.7)), 
+                    url(assets/imgs/course/'+this.pic+'.png) center center / cover no-repeat'}">
+      <ion-row>
+        <ion-thumbnail item-start>
+          <img src="{{'assets/imgs/logoApp.png'}}">
+        </ion-thumbnail>
+        <div item-content>
+          <h2 ion-text><b>{{course_id}}</b></h2>
+          <p ion-text color="dark">{{course_name}}</p>
+          <p ion-text color="dark"ion-text>จำนวนนักศึกษาทั้งหมด : {{studentCount}}</p>
+        </div>
+      </ion-row>
+      <ion-row><hr >
+        <ion-col>
+          <button ion-button block (click)="onClick_CreateScanSet()">
+            <div>สแกนเป็นชุด</div>
+          </button>
+        </ion-col>
+        <ion-col>
+           <button ion-button block (click)="onClick_CreateScanPerson()">
+            <div>สแกนรายบุคคล</div>
+          </button>
+        </ion-col>        
+      </ion-row>
+    </ion-item>  
+
+    <ion-item style="padding: 5%">
+      <div item-content ion-text text-right style="font-size: 14px">
+        <b>{{activity.name}}</b>
+      </div>
+      <div item-end ion-text text-right style="font-size: 12px">
+        ASC/DESC<br><ion-toggle [(ngModel)]="isToggled"></ion-toggle>
+      </div>
+    </ion-item>
+      
+      <ion-list>
+        <div *ngIf="isToggled==true">
+          <!--ion-item-sliding *ngFor="let item of scheduleQuizList | orderBy:'FIELD_TO_SORT_BY':true ; let odd = odd; let i = index"-->
+          <ion-item-sliding *ngFor="let item of scheduleQuizList.slice().reverse() ; let odd = odd; let i = index">
+            <ion-item>
+              <ion-row>
+                <ion-avatar item-start >
+                  <div style="font-size: 30px" ion-text [color]="odd ? 'tone1' : 'tone2'">
+                    #{{scheduleQuizList.length-i}}
+                  </div>
+                  <!--img src="{{'assets/imgs/thumbnail/' + i + '.png'}}"-->
+                </ion-avatar>
+                <div>
+                  <!--h2>ครั้งที่ {{i+1}}</h2-->
+                  <div style="font-size: 30px" ion-text [color]="odd ? 'tone1' : 'tone2'">
+                    <ion-row>
+                      <h3>
+                        <ion-icon name="calendar"></ion-icon> : {{item.date | date:'dd-MM-yyyy'}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <ion-icon name="clock"></ion-icon> : {{item.date | date:'HH:mm'}}
+                    </h3>
+                    </ion-row>
+                  </div>
+                  <!--p>เวลาสาย : {{item.lateTime | date:'HH:mm'}}  |  คะแนนสาย : {{item.lateScore}}</p-->
+                  <p>
+                    <ion-icon name="checkmark" ion-text color="success"></ion-icon>
+                    &nbsp;บันทึกคะแนนแล้ว : {{item.count}}/{{studentCount}}
+                  </p>   
+                </div>
+              </ion-row>
+
+            </ion-item>
+            <ion-item-options side="right">
+              <button ion-button color="secondary" (click)="onClick_ScanRepeat(item.id, item)">
+                <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
+                SCAN
+              </button>
+            </ion-item-options>
+              
+            <ion-item-options side="left">
+              <button ion-button color="danger" (click)="onClick_Delete(item.id)">
+                <ion-icon name="trash" style="font-size: 25px"></ion-icon>
+                Delete
+              </button>
+              <button ion-button color="gray" (click)="onClick_Setting(item.id, item)">
+                <ion-icon name="settings" style="font-size: 25px"></ion-icon>
+                Setting
+              </button>
+            </ion-item-options>
+          </ion-item-sliding>
+        </div>
+      <!--//////////////////////////////////////////////////////////////////////////-->
+      <div *ngIf="isToggled==false || isToggled==null">
+          <ion-item-sliding *ngFor="let item of scheduleQuizList ; let odd = odd; let i = index">
+            <ion-item>
+              <ion-row>
+                <ion-avatar item-start >
+                  <div style="font-size: 30px" ion-text [color]="odd ? 'tone1' : 'tone2'">
+                    #{{i+1}}
+                  </div>
+                  <!--img src="{{'assets/imgs/thumbnail/' + i + '.png'}}"-->
+                </ion-avatar>
+                <div>
+                  <!--h2>ครั้งที่ {{i+1}}</h2-->
+                  <div style="font-size: 30px" ion-text [color]="odd ? 'tone1' : 'tone2'">
+                    <ion-row>
+                      <h3>
+                        <ion-icon name="calendar"></ion-icon> : {{item.date | date:'dd-MM-yyyy'}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <ion-icon name="clock"></ion-icon> : {{item.date | date:'HH:mm'}}
+                    </h3>
+                    </ion-row>
+                  </div>
+                  <!--p>เวลาสาย : {{item.lateTime | date:'HH:mm'}}  |  คะแนนสาย : {{item.lateScore}}</p-->
+                  <p>
+                    <ion-icon name="checkmark" ion-text color="success"></ion-icon>
+                    &nbsp;บันทึกคะแนนแล้ว : {{item.count}}/{{studentCount}}
+                  </p>   
+                </div>
+              </ion-row>
+
+            </ion-item>
+            <ion-item-options side="right">
+              <button ion-button color="secondary" (click)="onClick_ScanRepeat(item.id, item)">
+                <ion-icon name="qr-scanner" style="font-size: 25px"></ion-icon>
+                SCAN
+              </button>
+            </ion-item-options>
+              
+            <ion-item-options side="left">
+              <button ion-button color="danger" (click)="onClick_Delete(item.id)">
+                <ion-icon name="trash" style="font-size: 25px"></ion-icon>
+                Delete
+              </button>
+              <button ion-button color="gray" (click)="onClick_Setting(item.id, item)">
+                <ion-icon name="settings" style="font-size: 25px"></ion-icon>
+                Setting
+              </button>
+            </ion-item-options>
+          </ion-item-sliding>
+        </div>
+
+      </ion-list>
+
+
+  </ion-content>

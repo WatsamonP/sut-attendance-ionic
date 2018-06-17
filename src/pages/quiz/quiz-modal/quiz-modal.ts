@@ -84,22 +84,6 @@ export class QuizModalPage {
     console.log('ionViewDidLoad QuizModalPage');
   }
 
-  /*
-  public update() {
-    this.scoreRangeArr = [];
-    let temp = Number(this.structure.upper);
-    for(var i=Number(this.structure.upper) ; i>=Number(this.structure.lower) ; i--){
-      this.scoreRangeArr.push(temp);
-      temp = temp-1;
-    }
-  }
-
-  dismiss() {   // for back to QuizPage
-    let data = this.scoreSelect;
-    this.viewCtrl.dismiss(data);
-  }
-  */
-
   public closeModal(){
     this.viewCtrl.dismiss('close');
   }
@@ -108,6 +92,7 @@ export class QuizModalPage {
   // ON Click Scan
   /////////////////////////////////////////////////////////////////////
   public onClickScan(){
+    console.log(this.status)
     if(this.scoreSelect == undefined || this.scoreSelect == null || this.scoreSelect == 0 ){
       this.alertErrorScore();
     }else if(this.scoreSelect <= 0){
@@ -123,6 +108,11 @@ export class QuizModalPage {
         console.log('toRepeat'+this.quiz_id);
         //this.scanQR(this.quiz_id);
         this.pushToScanPage(this.quiz_id);
+      }else if(this.status == '2'){
+        console.log('toRepeatString'+this.quiz_id);
+        //this.scanQR(this.quiz_id);
+        
+        this.pushToScanPageString(this.quiz_id);
       }
     }
   }
@@ -156,80 +146,6 @@ export class QuizModalPage {
     alert.present();
   }
 
-  /*
-  confirmUpdateScore(id, barcodeDataText, countScan) {
-    let alert = this.alertCtrl.create({
-      title: 'มีคะแนน Quiz ของ '+ barcodeDataText +' แล้ว',
-      message: 'ต้องการอัพเดทข้อมูลหรือไม่ ?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-            //this.scanQR(id);
-            this.pushToScanPage(id);
-          }
-        },
-        {
-          text: 'Update',
-          handler: () => {
-            console.log('Buy clicked');
-            this.updateQuiz(id, barcodeDataText, countScan-1);
-            //this.scanQR(id);
-            this.pushToScanPage(id);
-          }
-        }
-      ]
-    });
-    alert.present();
-  }
-
-  errorStudentFlag(id) {
-    let alert = this.alertCtrl.create({
-      title: 'ERROR !',
-      subTitle: 'ไม่มีรหัสนักศึกษา ในคลาสนี้',
-      buttons: [{
-        text: 'OK',
-        handler: () => {
-          //this.scanQR(id);
-          this.pushToScanPage(id);
-        }}
-      ]
-    });
-    alert.present();
-  }
-
-  totalScoreSet() {
-    let prompt = this.alertCtrl.create({
-      title: 'จัดการคะแนน',
-      message: "กำหนดคะแนนเต็มสำหรับ "+this.activity.name+" นี้",
-      inputs: [
-        {
-          name: 'totalScore',
-          type : 'number',
-          value : '',
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: data => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Save',
-          handler: data => {
-            this.totalScore = data.totalScoreSet;
-          }
-        }
-      ]
-    });
-    prompt.present();
-  }
-  */
-
   /////////////////////////////////////////////////////////////////////
   // Set Default 
   /////////////////////////////////////////////////////////////////////
@@ -255,79 +171,6 @@ export class QuizModalPage {
     //this.scanQR(dateId);
     this.pushToScanPage(dateId);
   }
-  
-  /*
-
-  updateQuiz(id, barcodeDataText, countScan){
-    let scoreNo = Number(this.scoreSelect);
-    countScan = countScan+1;
-
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}`)
-    .update({
-      count : countScan,
-    });
-    
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/students/${barcodeDataText}/${this.activity.id}/${id}`)
-      .update({
-        score : scoreNo,
-        date : Date(),
-      });
-
-    this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${id}/checked/${barcodeDataText}`)
-      .set({
-        id : barcodeDataText,
-    });
-  }
-  */
-
-  /*
-
-  checkStudentClass(barcodeDataText,id){
-    for(var i=0 ; i<this.studentList.length ; i++){
-      if(barcodeDataText == this.studentList[i].id){
-        //alert('found'+barcodeDataText +' = ' + this.studentList[i].id);
-        //console.log('found')
-        this.studentFlag = true;
-        break;
-      }else{
-        //alert('not found');
-        this.studentFlag = false;
-        continue;
-        //this.errorStudentFlag(id);
-      }
-    }
-    return this.studentFlag;
-  }
-  */
-
-  /*
-
-  checkQuiz(barcodeDataText, id){
-    let countScan;
-    for(var i=0 ; i<this.scheduleQuizList.length ; i++){
-      if(id == this.scheduleQuizList[i].key){
-        countScan = this.scheduleQuizList[i].count;
-        if(this.scheduleQuizList[i].checked != undefined){
-          if(barcodeDataText in this.scheduleQuizList[i].checked){
-            console.log('duplicate');
-            this.confirmUpdateScore(id, barcodeDataText, countScan);
-          }else{
-            console.log('scan');
-            this.updateQuiz(id, barcodeDataText, countScan);
-            //this.scanQR(id);
-            this.pushToScanPage(id);
-          }
-        }else{
-          console.log('scan');
-          this.updateQuiz(id,barcodeDataText, countScan);
-          //this.scanQR(id);
-          this.pushToScanPage(id);
-        }
-      }
-    }
-  }
-  */
-
 
   /////////////////////////////////////////////////////////////////////
   // Scan
@@ -350,52 +193,24 @@ export class QuizModalPage {
     });
     scan.present();
   }
-  /*
 
-  public scanOption = {
-    showTorchButton : true,
-    prompt : "ให้ตำแหน่งของ barcode อยู่ภายในพื้นที่ scan",
-    disableSuccessBeep: false,
-    resultDisplayDuration : 1500
-  };
-
-  */
-
-  /*
-  public scanQR(id) {
-
-    this.barcodeScanner.scan(this.scanOption).then((barcodeData) => {
-      
-      if (!barcodeData.cancelled) {
-        let stdFlag = this.checkStudentClass(barcodeData.text,id);
-        if(stdFlag){
-          this.checkQuiz(barcodeData.text,id); 
-        }else{
-          this.errorStudentFlag(id);
-        }
-      }else{
-        this.viewCtrl.dismiss('close');
-        /*
-        this.navCtrl.push(QuizPage, {
-          course_id: this.course_id,
-          course_name: this.course_name,
-          activity : this.activity
-        }).then(() => {
-          this.navCtrl.pop();
-        })
-        
-        return false;
+  pushToScanPageString(id){
+    let dataList = 
+      { key : 'stringSet',
+        quiz_id : id,
+        totalScore : this.totalScore,
+        scoreSelect : this.scoreSelect
       }
-      
-      console.log(barcodeData);
-
-      }, (err) => {
-        console.log(err);
+    let scan = this.modalCtrl.create(ScanQuizPage, 
+      { 
+        activity : this.activity,
+        course_id : this.course_id,
+        dataList : dataList,
     });
+    scan.onDidDismiss(data => {
+      this.closeModal();
+    });
+    scan.present();
   }
-  */
-
-
-  ///////////////////////
 
 }

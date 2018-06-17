@@ -84,6 +84,8 @@ export class ScanQuizPage {
         this.scanPerson(this.quiz_id);
       }else if(this.scanKey== 'set'){
         this.scanSet(this.quiz_id);
+      }else if(this.scanKey == 'stringSet'){
+        this.doCreateRepeatStringSet(this.quiz_id);
       }else if(this.scanKey == 'stringPerson'){
         this.doCreateRepeatString(this.quiz_id);
       }else{
@@ -145,6 +147,42 @@ export class ScanQuizPage {
     });
   }
 
+  public doCreateRepeatStringSet(id) {
+    let prompt = this.alertCtrl.create({
+      title: 'ป้อนรหัสนักศึกษา',
+      //message: "คะแนนสำหรับนักศึกษา<br>สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
+      inputs: [
+        {
+          name: 'stdId',
+          placeholder: 'รหัสนักศึกษา',
+          type : 'text',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            this.closeModal();
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            let stdFlag = this.checkStudentClass(data.stdId,id);
+            if(stdFlag){
+              this.checkQuizSet(data.stdId,id); 
+              //this.closeModal();
+            }else{
+              this.errorStudentFlag(id);
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
   public doCreateRepeatString(id) {
     let prompt = this.alertCtrl.create({
       title: 'ป้อนรหัสนักศึกษา',
@@ -170,7 +208,7 @@ export class ScanQuizPage {
             let stdFlag = this.checkStudentClass(data.stdId,id);
             if(stdFlag){
               this.checkQuizPerson(data.stdId,id); 
-              this.closeModal();
+              //this.closeModal();
             }else{
               this.errorStudentFlag(id);
             }
@@ -210,11 +248,15 @@ export class ScanQuizPage {
             this.confirmUpdateScore(barcodeDataText, quiz_id, countScan);
           }else{
             console.log('scan');
-            i//f(this.scanKey == 'person'){
+            //if(this.scanKey == 'person'){
             //  this.insertScoreModal(barcodeDataText, quiz_id,countScan)
             //}else if(this.scanKey == 'set'){
               this.updateQuiz(quiz_id, barcodeDataText, countScan);
-              this.scanSet(quiz_id);
+              if(this.scanKey == 'stringSet'){
+                this.doCreateRepeatStringSet(quiz_id)
+              }else{
+                this.scanSet(quiz_id);
+              }
             //}
           }
         }else{
@@ -224,7 +266,11 @@ export class ScanQuizPage {
           //}else if(this.scanKey == 'set'){
             //console.log('update '+ this.dataList.key)
             this.updateQuiz(quiz_id, barcodeDataText, countScan);
-            this.scanSet(quiz_id);
+            if(this.scanKey == 'stringSet'){
+              this.doCreateRepeatStringSet(quiz_id)
+            }else{
+              this.scanSet(quiz_id);
+            }
           //}
         }
       }
@@ -279,6 +325,8 @@ export class ScanQuizPage {
             this.scanSet(id)
           }else if(this.scanKey == 'stringPerson'){
             this.doCreateRepeatString(id);
+          }else if(this.scanKey == 'stringSet'){
+            this.doCreateRepeatStringSet(id);
           }
         }}
       ]
@@ -302,6 +350,8 @@ export class ScanQuizPage {
               this.scanSet(id)
             }else if(this.scanKey == 'stringPerson'){
               this.closeModal();
+            }else if(this.scanKey == 'stringSet'){
+              this.doCreateRepeatStringSet(id);
             }
           }
         },
@@ -317,6 +367,9 @@ export class ScanQuizPage {
               this.scanSet(id);
             }else if(this.scanKey == 'stringPerson'){
               this.insertScoreModal(barcodeDataText, id, countScan-1);
+            }else if(this.scanKey == 'stringSet'){
+              this.updateQuiz(id, barcodeDataText, countScan-1);
+              this.doCreateRepeatStringSet(id);
             }
           }
         }
@@ -341,7 +394,8 @@ export class ScanQuizPage {
     });
     profileModal.onDidDismiss(data => {
       if(this.scanKey == 'stringPerson'){
-        this.closeModal();
+        this.doCreateRepeatString(quiz_id);
+        //this.closeModal();
       }else{
         this.scanPerson(quiz_id);
       }
