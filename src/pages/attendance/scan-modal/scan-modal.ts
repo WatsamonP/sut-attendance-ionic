@@ -70,6 +70,9 @@ export class ScanModalPage {
           return items.map(item => item.key);
       });
 
+      console.log(this.leaveActivity);
+      console.log(this.scanRepeatActivity);
+
       if(this.leaveActivity != 'none'){
         if(this.leaveActivity == 'scan'){
           this.attendance_status = 'Leave';
@@ -78,11 +81,7 @@ export class ScanModalPage {
         }else if(this.leaveActivity == 'string'){
           this.doCreateLeaveString(this.attendanceData.id);
         }
-      }else{
-        this.scanAttendance(this.attendanceData.id)
-      }
-
-      if(this.scanRepeatActivity != 'none'){
+      }else if(this.scanRepeatActivity != 'none'){
         if(this.scanRepeatActivity == 'scan'){
           this.scanAttendance(this.attendanceData.id)
           //this.doCreateLeaveScan(this.attendanceData.id);

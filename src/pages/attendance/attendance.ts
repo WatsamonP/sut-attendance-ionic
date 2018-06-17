@@ -221,6 +221,7 @@ export class AttendancePage {
 
   public onClick_UpdateAttendanceLeave(id,item){
     this.attendanceData = item;
+    this.scanRepeatActivity = 'none';
     this.attendance_status = 'Leave';
     let alert = this.alertCtrl.create();
     alert.setTitle('เลือกรายการ');
