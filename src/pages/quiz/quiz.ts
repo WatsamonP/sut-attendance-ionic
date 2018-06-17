@@ -12,7 +12,6 @@ import { QuizModalPage } from './quiz-modal/quiz-modal';
 import { QuizModalPersonPage } from './quiz-modal-person/quiz-modal-person';
 import { ScanQuizPage } from './scan-quiz/scan-quiz';
 
-@IonicPage()
 @Component({
   selector: 'page-quiz',
   templateUrl: 'quiz.html',

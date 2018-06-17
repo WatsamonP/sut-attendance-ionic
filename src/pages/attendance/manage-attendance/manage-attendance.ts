@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams, ViewController, AlertController } 
 import moment from 'moment';
 import { AttendanceService } from '../../../services/attendance.service'
 
-@IonicPage()
 @Component({
   selector: 'page-manage-attendance',
   templateUrl: 'manage-attendance.html',

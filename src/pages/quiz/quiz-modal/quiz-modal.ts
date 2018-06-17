@@ -9,7 +9,6 @@ import { BarcodeScanner } from "@ionic-native/barcode-scanner";
 import { Identifiers } from '@angular/compiler';
 import { ScanQuizPage } from '../scan-quiz/scan-quiz';
 
-@IonicPage()
 @Component({
   selector: 'page-quiz-modal',
   templateUrl: 'quiz-modal.html',

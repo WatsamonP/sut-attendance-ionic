@@ -8,7 +8,6 @@ import { AuthServiceProvider } from '../../../services/auth.service';
 import { AngularFireDatabase } from 'angularfire2/database';
 import moment from 'moment';
 
-@IonicPage()
 @Component({
   selector: 'page-scan-modal',
   templateUrl: 'scan-modal.html',
@@ -69,9 +68,6 @@ export class ScanModalPage {
           this.scheduleAttendanceList = items;
           return items.map(item => item.key);
       });
-
-      console.log(this.leaveActivity);
-      console.log(this.scanRepeatActivity);
 
       if(this.leaveActivity != 'none'){
         if(this.leaveActivity == 'scan'){
@@ -212,15 +208,14 @@ export class ScanModalPage {
     });
     /////////////////////////////////
     
-    if(this.leaveActivity == 'string' || this.scanRepeatActivity == 'string'){
-      //this.scanAttendance(id);
-      console.log('success create leave student');
+    if(this.leaveActivity == 'string'){
+      this.doCreateLeaveString(id);
+    }else if(this.scanRepeatActivity == 'string'){
+      this.doCreateRepeatString(id);
     }else{
       this.scanAttendance(id);
     }
-    
   }
-
 
   calculateTime(){
     let currentDay = moment().format();
@@ -399,6 +394,8 @@ export class ScanModalPage {
         handler: () => {
           if(this.leaveActivity == 'string'){
             this.doCreateLeaveString(id);
+          }else if(this.scanRepeatActivity == 'string'){
+            this.doCreateRepeatString(id);
           }else{
             this.scanAttendance(id);
           }

@@ -15,7 +15,6 @@ import { ScanModalPage } from './scan-modal/scan-modal';
 import { ManageAttendancePage } from '../attendance/manage-attendance/manage-attendance';
 import { AttendanceService } from '../../services/attendance.service'
 
-@IonicPage()
 @Component({
   selector: 'page-attendance',
   templateUrl: 'attendance.html',

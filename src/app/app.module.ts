@@ -12,7 +12,8 @@ import { QuizModalPage } from '../pages/quiz/quiz-modal/quiz-modal';
 import { QuizModalPersonPage } from '../pages/quiz/quiz-modal-person/quiz-modal-person';
 import { ScanModalPage } from '../pages/attendance/scan-modal/scan-modal';
 import { ManageAttendancePage } from '../pages/attendance/manage-attendance/manage-attendance';
-import { ExpandableComponent } from '../components/expandable/expandable'
+import { ExpandableComponent } from '../components/expandable/expandable';
+//import { ComponentsModule } from '../components/components.module'
 
 import { AboutMePage } from '../pages/about-me/about-me';
 import { StatusBar } from '@ionic-native/status-bar';

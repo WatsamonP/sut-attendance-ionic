@@ -4,7 +4,6 @@ import { QuizPage } from '../quiz';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthServiceProvider } from '../../../services/auth.service';
 
-@IonicPage()
 @Component({
   selector: 'page-quiz-modal-person',
   templateUrl: 'quiz-modal-person.html',

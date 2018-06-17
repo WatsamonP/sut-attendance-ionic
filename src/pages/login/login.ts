@@ -5,7 +5,6 @@ import { HomePage } from '../home/home';
 import { AuthServiceProvider } from '../../services/auth.service';
 import { ToastController } from 'ionic-angular';
 
-@IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',

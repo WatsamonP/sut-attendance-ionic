@@ -10,7 +10,6 @@ import moment from 'moment';
 import { QuizModalPage } from '../quiz-modal/quiz-modal';
 import { QuizModalPersonPage } from '../quiz-modal-person/quiz-modal-person';
 
-@IonicPage()
 @Component({
   selector: 'page-scan-quiz',
   templateUrl: 'scan-quiz.html',
