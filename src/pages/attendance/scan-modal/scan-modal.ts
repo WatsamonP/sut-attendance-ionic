@@ -84,7 +84,6 @@ export class ScanModalPage {
 
       if(this.scanRepeatActivity != 'none'){
         if(this.scanRepeatActivity == 'scan'){
-          this.attendance_status = 'Leave';
           this.scanAttendance(this.attendanceData.id)
           //this.doCreateLeaveScan(this.attendanceData.id);
         }else if(this.scanRepeatActivity == 'string'){
