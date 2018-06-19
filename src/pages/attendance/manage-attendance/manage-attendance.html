@@ -15,7 +15,7 @@
     </div><br>
     <div *ngIf="createFlag">
       <b>ค่าเริ่มต้น</b><br>
-      &nbsp;&nbsp;&nbsp; - สาย : 0.5 | ตรงเวลา : 1 | ขาด/ลา : 1<br>
+      &nbsp;&nbsp;&nbsp; - สาย : 0.5 | ตรงเวลา : 1 | ลา/ป่วย : 1<br>
       &nbsp;&nbsp;&nbsp; - เวลาสาย +10 นาทีจากเวลาปัจจุบัน
     </div>
   </div>
@@ -40,7 +40,7 @@
       <ion-input text-right type="number" [(ngModel)]="onTimeScore"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label><ion-icon name="medkit"></ion-icon> ป่วยลา</ion-label>
+      <ion-label><ion-icon name="medkit"></ion-icon> ลา/ป่วย</ion-label>
       <ion-input text-right type="number" [(ngModel)]="leaveScore"></ion-input>
     </ion-item>
   </ion-list>

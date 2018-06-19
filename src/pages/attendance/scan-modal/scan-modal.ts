@@ -228,7 +228,7 @@ export class ScanModalPage {
 
   doCreateLeaveString(id) {
     let prompt = this.alertCtrl.create({
-      title: 'ป้อนรหัสนักศึกษา ที่"ป่วยหรือลา"',
+      title: 'ป้อนรหัสนักศึกษา<br>" ป่วยหรือลา "',
       message: "สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
       inputs: [
         {
@@ -255,7 +255,7 @@ export class ScanModalPage {
               let stdFlag = this.checkStudentClass(data.stdId,id);
               if(stdFlag){
                 this.checkAttendance(data.stdId,id); 
-                this.closeModal();
+                //this.closeModal();
               }else{
                 this.errorStudentFlag(id);
               }
@@ -269,7 +269,7 @@ export class ScanModalPage {
 
   doCreateRepeatString(id) {
     let prompt = this.alertCtrl.create({
-      title: 'ป้อนรหัสนักศึกษา ที่"มาเรียน"',
+      title: 'ป้อนรหัสนักศึกษา<br>" มาเรียน "',
       message: "สามารถแก้ไข คะแนนที่ได้เมนู SETTING",
       inputs: [
         {
@@ -295,7 +295,7 @@ export class ScanModalPage {
               let stdFlag = this.checkStudentClass(data.stdId,id);
               if(stdFlag){
                 this.checkAttendance(data.stdId,id); 
-                this.closeModal();
+                //this.closeModal();
               }else{
                 this.errorStudentFlag(id);
               }

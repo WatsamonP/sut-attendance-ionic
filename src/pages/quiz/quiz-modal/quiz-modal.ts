@@ -88,6 +88,15 @@ export class QuizModalPage {
     this.viewCtrl.dismiss('close');
   }
 
+  public update() {
+    this.scoreRangeArr = [];
+    let temp = Number(this.structure.upper);
+    for(var i=Number(this.structure.upper) ; i>=Number(this.structure.lower) ; i--){
+      this.scoreRangeArr.push(temp);
+      temp = temp-1;
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////
   // ON Click Scan
   /////////////////////////////////////////////////////////////////////
