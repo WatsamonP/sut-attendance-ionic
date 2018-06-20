@@ -261,7 +261,7 @@ export class QuizPage {
   public onClick_Setting(id, item){
     let prompt = this.alertCtrl.create({
       title: 'จัดการคะแนน',
-      message: "กำหนดคะแนนเต็มสำหรับ "+this.activity.name+" นี้<br>หากไม่กำหนดระบบจำกำหนดอัตโนมัติ 10 คะแนน",
+      message: "กำหนดคะแนนเต็มสำหรับ "+this.activity.name+" นี้",
       inputs: [
         {
           name: 'totalScore',
