@@ -29,7 +29,7 @@ export class AttendanceService {
     this.studentList = [];
     this.studentList = studentList;
     let studentCount = Number(this.studentList.length);
-    let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
+    let dateId = moment().format("YYYY-MM-DD-HH-mm-ss"); 
     this.attendance_id = dateId;
     let temp = moment(lateTime).format(); 
 

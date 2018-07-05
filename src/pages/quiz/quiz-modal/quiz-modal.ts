@@ -159,7 +159,7 @@ export class QuizModalPage {
   // Set Default 
   /////////////////////////////////////////////////////////////////////
   createNewQuiz(){
-    let dateId = moment().format("DD-MM-YYYY-HH-mm-ss"); 
+    let dateId = moment().format("YYYY-MM-DD-HH-mm-ss"); 
 
     this.db.object(`users/${this.auth.currentUserId()}/course/${this.course_id}/schedule/${this.activity.id}/${dateId}`)
         .update({
