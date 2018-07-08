@@ -155,17 +155,17 @@
             <ion-row ion-text text-center>
               <ion-col ion-text color='primary'><ion-icon name="people"></ion-icon><br>กลุ่ม</ion-col>  
               <ion-col ion-text color='success'><ion-icon name="happy"></ion-icon><br>ตรงเวลา</ion-col>  
-              <ion-col ion-text color='b-create'><ion-icon name="sad"></ion-icon><br>สาย</ion-col>  
+              <ion-col ion-text color='b-create'><ion-icon name="sad"></ion-icon><br>สาย</ion-col> 
+              <ion-col ion-text color='warning'><ion-icon name="medkit"></ion-icon><br>ลา</ion-col>   
               <ion-col ion-text color='danger2'><ion-icon name="close"></ion-icon><br>ขาด</ion-col> 
-              <ion-col ion-text color='warning'><ion-icon name="medkit"></ion-icon><br>ลา</ion-col>  
             </ion-row>
               <div ion-text [color]="odd ? 'tone1' : 'tone2'" *ngFor="let g of groupList">
                 <ion-row ion-text text-center>
-                  <ion-col ion-text color='primary'>{{g.gid}} ({{g.all}})</ion-col>  
+                  <ion-col ion-text color='primary'>{{g.gid}}</ion-col>  
                   <ion-col ion-text color='success'>{{g.countOnTime}}</ion-col>  
                   <ion-col ion-text color='b-create'>{{g.countLate}}</ion-col>  
-                  <ion-col ion-text color='danger2'>{{g.countMissed}}</ion-col>  
                   <ion-col ion-text color='warning'>{{g.countLeave}}</ion-col>  
+                  <ion-col ion-text color='danger2'>{{g.countMissed}}/{{g.all}}</ion-col>  
                 </ion-row> 
               </div>
               </h6> 
