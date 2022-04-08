@@ -46,7 +46,7 @@
     "ionic-angular": "3.9.2",
     "ionic-text-avatar": "^1.1.0",
     "ionicons": "3.0.0",
-    "moment": "^2.22.1",
+    "moment": "^2.29.2",
     "ng2-dragula": "^1.5.0",
     "ngx-order-pipe": "^2.0.1",
     "phonegap-plugin-barcodescanner": "^7.1.2",
